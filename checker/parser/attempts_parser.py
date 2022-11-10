@@ -23,9 +23,9 @@ def get_participant(pcms_id: str, name: str, contest: Contest = None) -> Partici
     return participant
 
 
-def get_specified_attempts(login: str, password: str, contest: Contest, count, from_page):
+def get_specified_attempts(group: Group, contest: Contest, count, from_page):
     api_url = get_api_url()
-    attempts_tepmlate_url = f'client/api/admin/run/list?login={login}&password={password}&' \
+    attempts_tepmlate_url = f'client/api/admin/run/list?login={group.login}&password={group.password}&' \
                             f'contest={contest.contest_id}&count={count}&from={from_page}' \
                             '&detail=source&format=json'
     contest_url = api_url + attempts_tepmlate_url
@@ -36,7 +36,7 @@ def get_specified_attempts(login: str, password: str, contest: Contest, count, f
     return None
 
 
-def get_problem_contest(alias: str, name: str, contest: Contest, login, password):
+def get_problem_contest(alias: str, name: str, contest: Contest, group: Group):
     try:
         return ContestProblem.objects.get(alias=alias, problem__name=name, contest=contest)
     except ContestProblem.DoesNotExist:
@@ -63,7 +63,7 @@ def get_source_path(participant: Participant, contest: Contest, json_source, job
     return save_path
 
 
-def parse_contest_attempts(login: str, password: str, contest: Contest, count=50):
+def parse_contest_attempts(group: Group, contest: Contest, count=50):
     # try:
     first_attempt_in_chunk = None
     from_page = 0
@@ -72,7 +72,7 @@ def parse_contest_attempts(login: str, password: str, contest: Contest, count=50
         count = 100000
         print(count)
     while not stop:
-        json_dictionary = get_specified_attempts(login, password, contest, count, from_page)
+        json_dictionary = get_specified_attempts(group, contest, count, from_page)
         if json_dictionary is None:
             break
         if from_page == 0:
@@ -100,7 +100,7 @@ def parse_contest_attempts(login: str, password: str, contest: Contest, count=50
             attempt_db.participant = participant
             attempt_db.problem_contest = get_problem_contest(attempt_json['problem'][0]['alias'],
                                                              attempt_json['problem'][0]['name'],
-                                                             contest, login, password)
+                                                             contest, group)
             attempt_db.source = get_source_path(participant, contest,
                                                 attempt_json['source-file'][0], run_pcms_id)
             attempt_db.save()

@@ -62,6 +62,7 @@ class ContestProblem(models.Model):
     contest = models.ForeignKey(Contest, on_delete=models.CASCADE)
     alias = models.CharField(max_length=30)
     last_check_time = models.DateTimeField(null=True, blank=True)
+    threshold = models.FloatField(null=True, blank=True)
 
     def __str__(self):
         return f'{self.contest}: {self.alias}. {self.problem}'
