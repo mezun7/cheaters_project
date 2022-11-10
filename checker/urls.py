@@ -25,6 +25,13 @@ urlpatterns = [
          ),
          name='login'
          ),
+    path('group/<int:group_id>/', views.group, name='group'),
+    path('group_edit/<int:group_id>/', views.edit_group, name='edit_group'),
+    path('add_group/', views.add_group, name='add_group'),
+    path('contest/<int:contest_id>/', views.contest, name='contest'),
+    path('pending_manual_check/', views.pending_manual_check, name='pending_manual_check'),
+    path('automatic_checking/', views.automatic_checking, name='automatic_checking'),
+    path('all_cheaters/', views.all_cheaters, name='all_cheaters')
     # path('contests/<int:group_id>', views.list_of_contests, name='list_of_contests'),
     # path('contest/<int:contest_pk>', views.contest_result, name='contest_result')
     # path('test/', views.test_upload, name='test-upload'),

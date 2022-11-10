@@ -10,9 +10,9 @@ from django.contrib.admin import TabularInline
 from checker.models import Group, Contest, Problem, Attempt, Participant, ContestProblem, FileUploadTest, UserType
 
 
-# @admin.register(Group)
-# class AdminGroup(admin.ModelAdmin):
-#     list_display = ('name', 'login', 'pcms_url')
+@admin.register(Group)
+class AdminGroup(admin.ModelAdmin):
+    list_display = ('name', 'login', 'api_url')
 
 
 class ContestProblemInlineAdmin(TabularInline):

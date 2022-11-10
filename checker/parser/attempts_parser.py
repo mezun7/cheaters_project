@@ -41,7 +41,7 @@ def get_problem_contest(alias: str, name: str, contest: Contest, group: Group):
         return ContestProblem.objects.get(alias=alias, problem__name=name, contest=contest)
     except ContestProblem.DoesNotExist:
         # TODO start parsing contests
-        print('aaaa')
+        print('aaaa', alias, name, contest)
         return None
 
 
@@ -56,11 +56,26 @@ def get_source_path(participant: Participant, contest: Contest, json_source, job
     path = os.path.join(path, filename)
     fl = open(path, 'w')
     code = json_source['bytes'][37:]
-    code = str(base64.b64decode(code), 'utf-8')
+    try:
+        code = str(base64.b64decode(code), 'utf-8')
+    except UnicodeDecodeError:
+        print(job_id, contest, participant, base64.b64decode(code))
     fl.write(code)
     fl.close()
     save_path = posixpath.join(settings.SOURCE_FILES_SAVE_PATH, participant.pcms_id, filename)
     return save_path
+
+
+def parse_all_attempts():
+    groups = Group.objects.all()
+    for group in groups:
+        parse_all_group_contest(group)
+
+
+def parse_all_group_contest(group: Group):
+    contests = group.contest_set.all()
+    for contest in contests:
+        parse_contest_attempts(group, contest)
 
 
 def parse_contest_attempts(group: Group, contest: Contest, count=50):
@@ -76,11 +91,20 @@ def parse_contest_attempts(group: Group, contest: Contest, count=50):
         if json_dictionary is None:
             break
         if from_page == 0:
-            first_attempt_in_chunk = json_dictionary['ok']['item'][0]['job-id']
+            if int(json_dictionary['ok']['total']) == 0:
+                print(contest, 'doesnt have any attempts')
+                break
+            try:
+                first_attempt_in_chunk = json_dictionary['ok']['item'][0]['job-id']
+            except KeyError:
+                print(json_dictionary)
+                print(contest, group, contest.last_attempt_id_downloaded)
         if count == 100000:
             stop = True
         # print(json_dictionary)
         for attempt_json in json_dictionary['ok']['item']:
+            if attempt_json['problem'][0]['alias'] == '?':
+                continue
             run_pcms_id = attempt_json['job-id']
             if contest.last_attempt_id_downloaded == run_pcms_id:
                 stop = True
@@ -98,6 +122,7 @@ def parse_contest_attempts(group: Group, contest: Contest, count=50):
             attempt_db.language = attempt_json['language-id']
             attempt_db.time = int(attempt_json['time'])
             attempt_db.participant = participant
+
             attempt_db.problem_contest = get_problem_contest(attempt_json['problem'][0]['alias'],
                                                              attempt_json['problem'][0]['name'],
                                                              contest, group)

@@ -36,7 +36,7 @@ def parse_all_of_group_contests(group: Group):
         json_dictionary = json.loads(url.read().decode())
     if 'ok' in json_dictionary.keys():
         print('ok')
-        update_contest_data(json_dictionary, User.objects.first(), group)
+        update_contest_data(json_dictionary, group)
 
 
 def update_contest_data(json_dictionary, group: Group):
