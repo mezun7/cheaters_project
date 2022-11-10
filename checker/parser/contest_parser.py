@@ -79,5 +79,6 @@ def parse_problems(problems, contest):
         contest_problem.problem = problem_db
         contest_problem.contest = contest
         contest_problem.alias = problem['alias']
-        contest.last_contest_problems_parsing_time = datetime.now()
+
         contest_problem.save()
+        contest.last_contest_problems_parsing_time = datetime.now()
