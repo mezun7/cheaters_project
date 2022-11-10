@@ -1,5 +1,6 @@
 import json
 import urllib
+from datetime import datetime
 from urllib.parse import urljoin
 import posixpath
 from checker.models import Group, Contest, Participant, Attempt, ContestProblem
@@ -132,5 +133,6 @@ def parse_contest_attempts(group: Group, contest: Contest, count=50):
         from_page += 1
 
     contest.last_attempt_id_downloaded = first_attempt_in_chunk
+    contest.last_attempt_parsing_time = datetime.now()
     contest.save()
-    print('Successfully finished')
+    print('Successfully finished parsing', contest.name, contest.pcms_id)

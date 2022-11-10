@@ -52,6 +52,8 @@ class Contest(models.Model):
     problem = models.ManyToManyField(Problem, through='ContestProblem')
     last_page_downloaded = models.IntegerField(null=True, blank=True)
     last_attempt_id_downloaded = models.CharField(max_length=1000, null=True, blank=True)
+    last_attempt_parsing_time = models.DateTimeField(auto_now_add=True)
+    last_contest_problems_parsing_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
