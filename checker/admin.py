@@ -7,7 +7,7 @@ from django.contrib import admin
 # Register your models here.
 from django.contrib.admin import TabularInline
 
-from checker.models import Group, Contest, Problem, Attempt, Participant, ContestProblem, FileUploadTest
+from checker.models import Group, Contest, Problem, Attempt, Participant, ContestProblem, FileUploadTest, UserType
 
 
 # @admin.register(Group)
@@ -48,6 +48,11 @@ class AdminParticipant(admin.ModelAdmin):
 @admin.register(ContestProblem)
 class AdminContestProblem(admin.ModelAdmin):
     list_display = ('problem', 'contest', 'alias')
+
+
+@admin.register(UserType)
+class AdminUserType(admin.ModelAdmin):
+    list_display = ('user', 'auth_type', 'login_pcms', 'password_pcms')
 
 
 @admin.register(FileUploadTest)

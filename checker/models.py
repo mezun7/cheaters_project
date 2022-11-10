@@ -1,10 +1,28 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from checker.entities.entities import CONTEST_TYPE_CHOICES, CHECKING_STATUS_CHOICES, OUTCOME_CHOICES
+from checker.entities.entities import CONTEST_TYPE_CHOICES, CHECKING_STATUS_CHOICES, OUTCOME_CHOICES, AUTH_TYPE_CHOICES
 
 
 # Create your models here.
+
+class UserType(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    auth_type = models.CharField(max_length=2, choices=AUTH_TYPE_CHOICES)
+    login_pcms = models.CharField(max_length=100, null=True, blank=True)
+    password_pcms = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return self.user.username
+
+    class Meta:
+        constraints = [models.CheckConstraint(
+            name="%(app_label)s_%(class)s If you choose builtin auth, you should enter pcms login and password",
+            check=models.Q(auth_type='p') | (models.Q(auth_type='b') &
+                                             models.Q(login_pcms__isnull=False) & models.Q(
+                        password_pcms__isnull=False))
+        )]
+
 
 class Group(models.Model):
     users_have_access = models.ManyToManyField(User)

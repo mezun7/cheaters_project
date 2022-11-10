@@ -7,17 +7,21 @@ from checker.models import Contest, Problem, ContestProblem
 from checker.parser.get_api_url import get_api_url
 
 
+def get_contest_api_url(login, password):
+    contest_template_url = 'client/api/admin/problems?login=%s&password=%s&format=json'
+    api_url = get_api_url()
+    contest_url = api_url + (contest_template_url % (login, password))
+
+    return contest_url
+
 def get_scoring_model(model_str: str):
     model_str = model_str.split('#')
     return model_str[-1].lower()
 
 
-def parse_all_contests(login='shbazimuratov', password='1q2w!Q@W', username: User = None):
-    api_url = get_api_url()
-    contest_template_url = 'client/api/admin/problems?login=%s&password=%s&format=json'
+def parse_all_contests(login, password, username: User = None):
 
-    contest_url = api_url + (contest_template_url % (login, password))
-
+    contest_url = get_contest_api_url(login, password)
     # try:
     with urllib.request.urlopen(contest_url) as url:
         json_dictionary = json.loads(url.read().decode())
@@ -27,7 +31,6 @@ def parse_all_contests(login='shbazimuratov', password='1q2w!Q@W', username: Use
 
 
 def update_contest_data(json_dictionary, user: User, group: Group = None):
-
     results = json_dictionary['ok']['result']
     contests = json_dictionary['ok']['contest']
     for ind, result in enumerate(results):

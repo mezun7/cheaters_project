@@ -99,7 +99,8 @@ def parse_contest_attempts(login: str, password: str, contest: Contest, count=50
             attempt_db.time = int(attempt_json['time'])
             attempt_db.participant = participant
             attempt_db.problem_contest = get_problem_contest(attempt_json['problem'][0]['alias'],
-                                                             attempt_json['problem'][0]['name'], contest, login, password)
+                                                             attempt_json['problem'][0]['name'],
+                                                             contest, login, password)
             attempt_db.source = get_source_path(participant, contest,
                                                 attempt_json['source-file'][0], run_pcms_id)
             attempt_db.save()

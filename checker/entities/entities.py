@@ -1,4 +1,3 @@
-
 CONTEST_TYPE_CHOICES = (
     ('ioi', 'ioi'),
     ('icpc', 'icpc')
@@ -28,4 +27,9 @@ OUTCOME_CHOICES = (
     ('idleness-limit-exceeded', 'idleness-limit-exceeded'),
     ('security-violation', 'security-violation'),
     ('cancelled', 'cancelled')
+)
+
+AUTH_TYPE_CHOICES = (
+    ('p', 'pcms auth'),
+    ('b', 'builtin auth')
 )
