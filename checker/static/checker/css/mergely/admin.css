@@ -1,0 +1,147 @@
+/** Answers **/
+
+.answers .time,
+.answers .session,
+.answers .alias {
+    text-align: end;
+}
+
+.answers th {
+    padding-left: 0.2ex;
+    padding-right: 0.2ex;
+}
+
+.answers tbody {
+    cursor: hand;
+}
+
+.answers tr.no-answer {
+    background: #fffdd8;
+}
+
+.answers .response {
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+}
+.answers .response > select {
+    flex: 1 1 auto;
+    border: none;
+}
+
+.answers th.problemName {
+    display: none;
+}
+
+/** Clocks. */
+
+.clocks .BEFORE  { background: #fffdd8; }
+.clocks .PAUSED  { background: #fffdd8; }
+.clocks .RUNNING { background: #d8ffd8; }
+.clocks .OVER    { background: #ffd8d8; }
+
+.clocks .time,
+.clocks .length {
+    text-align: end;
+}
+
+table.clock.properties input[type='text'] {
+    border: solid 3px blue;
+    text-align: end;
+    width: 2em
+}
+
+input.clock\:timeHH, input.clock\:lengthHH {
+    width: 7em;
+}
+
+/** Jobs table. */
+
+.jobs .time,
+.jobs .attempt,
+.jobs .testNo,
+.jobs .score {
+    text-align: end;
+    width: 2em;
+}
+
+.jobs .sessionId {
+    width: 4em;
+}
+.jobs .job {
+    width: 5ex;
+}
+
+.jobs .outcome,
+.jobs .problemAlias {
+    text-align: center;
+}
+
+.jobs .rejudge {
+    padding: 0;
+}
+
+form.refresher .buttons {
+    width: 100%;
+    text-align: center;
+}
+
+form.refresher .buttons > * {
+    margin: 0.5ex 0.1em;
+}
+
+.CodeMirror.cm-s-default {
+    height: 120vh;
+}
+
+#mergely-compare {
+    padding: 1em 0;
+}
+
+#problems td.alias,
+.size {
+    text-align: end;
+}
+
+tr.group td.description h4 {
+    width: 100%;
+    text-align: center;
+}
+
+#tests .input,
+#tests .answer {
+    text-align: center;
+}
+
+#tests .split td {
+    border-left: none;
+    border-right: none;
+    height: 1ex;
+}
+
+/** Job page. */
+.job-tests .test,
+.job-tests .score,
+.job-tests .exit,
+.job-tests .outcome,
+.job-tests .meta {
+    text-align: center;
+}
+
+.job-tests .testComment,
+.job-tests .checkerComment {
+    text-align: start;
+}
+
+.job-tests td.test,
+.job-tests td.score,
+.job-tests td.time,
+.job-tests td.memory,
+.job-tests td.input,
+.job-tests td.output {
+    text-align: end;
+}
+
+.job-tests .meta {
+    font-weight: bold;
+}

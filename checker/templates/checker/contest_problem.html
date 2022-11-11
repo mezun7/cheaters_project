@@ -1,0 +1,104 @@
+{% extends 'checker/base.html' %}
+{% load form_extras %}
+{% block nav_items_messages %}
+
+{% endblock %}
+{% block navbar %}
+
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        {#                    <h1 class="h3 mb-2 text-gray-800">Tables</h1>#}
+        {#                    <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below.#}
+        {#                        For more information about DataTables, please visit the <a target="_blank"#}
+        {#                            href="https://datatables.net">official DataTables documentation</a>.</p>#}
+
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">{{ page_title }}</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <form class="" id="msform" method="post"
+                          action="{% url 'checker:edit_contest_threshold' group.pk contest.pk %}">
+                    {% csrf_token %}
+                                        {{ formset.management_form }}
+
+
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Alias</th>
+                                <th>Problem</th>
+                                <th>Threshold</th>
+                                <th>Last check time</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>#</th>
+                                <th>Alias</th>
+                                <th>Problem</th>
+                                <th>Threshold</th>
+                                <th>Last check time</th>
+
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            {% for cproblem in contest_problems %}
+
+                                <tr class="text-center">
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ cproblem.alias }}</td>
+                                    <td>{{ cproblem.problem.name }}</td>
+                                    <td>{{ formset|get_at_index_threshold:forloop.counter0 }}</td>
+                                    <td>{{ cproblem.last_check_time }}</td>
+
+                                    {#                                <td>#}
+                                    {#                                    <a href="{% url 'checker:start_sync' contest.pk %}"#}
+                                    {#                                       class="btn btn-info btn-circle" >#}
+                                    {#                                        <i class="fas fa-user-check"></i>#}
+                                    {#                                    </a>#}
+                                    {#                                    <a href="{% url 'checker:sync_contest' group.pk contest.pk %}"#}
+                                    {#                                       class="btn btn-success btn-circle" >#}
+                                    {#                                        <i class="fas fa-sync"></i>#}
+                                    {#                                    </a>#}
+                                    {#                                    <a href="{% url 'checker:edit_contest_threshold' group.pk contest.pk %}"#}
+                                    {#                                       class="btn btn-warning btn-circle" >#}
+                                    {#                                        <i class="fas fa-pen"></i>#}
+                                    {#                                    </a>#}
+                                    {#                                </td>#}
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                            {% for form in formset %}
+{#                                {{form.hidden_fields}}#}
+                                {% for hidden in form.hidden_fields %}
+                                    {{ hidden }}
+
+                                {% endfor %}
+
+                            {% endfor %}
+                        <a href="{% url 'checker:group' group.id %}" class="btn btn-secondary">Назад к контестам</a>
+                        <input type="submit" name="Submit" class="btn btn-primary"
+                               value="Сохранить"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+{% endblock %}
+
+{% block right_upper_button %}
+
+{% endblock %}

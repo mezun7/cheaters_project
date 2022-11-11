@@ -31,6 +31,9 @@ class Group(models.Model):
     password = models.CharField(max_length=1000)
     api_url = models.CharField(null=True, blank=True, max_length=1000)
 
+    class Meta:
+        unique_together = ('login', 'password', 'api_url')
+
 
 class Problem(models.Model):
     name = models.CharField(max_length=1000)
@@ -43,7 +46,7 @@ class Problem(models.Model):
 
 class Contest(models.Model):
     users_have_access = models.ManyToManyField(User)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
+    group = models.ManyToManyField(Group, null=True, blank=True)
     name = models.CharField(max_length=1000)
     pcms_id = models.CharField(max_length=1000)
     contest_id = models.CharField(max_length=1000)
@@ -95,10 +98,10 @@ class Attempt(models.Model):
 
 
 class Job(models.Model):
-    contest = models.ForeignKey(Contest, on_delete=models.CASCADE, null=True, blank=True)
-    problems = models.ManyToManyField(Problem)
-    participant = models.ManyToManyField(Participant)
-    groups = models.ManyToManyField(Group)
+    contest = models.ManyToManyField(Contest, null=True, blank=True)
+    problems = models.ManyToManyField(Problem, blank=True, null=True)
+    participant = models.ManyToManyField(Participant, blank=True, null=True)
+    groups = models.ManyToManyField(Group, blank=True, null=True)
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(null=True, blank=True)
 
@@ -110,7 +113,7 @@ class AttemptsCheckJobs(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     attempt_lhs = models.ForeignKey(Attempt, on_delete=models.CASCADE, related_name='jobs_lhs')
     attempt_rhs = models.ForeignKey(Attempt, on_delete=models.CASCADE, related_name='jobs_rhs')
-    script_checking_result = models.FloatField()
+    script_checking_result = models.FloatField(default=-1)
     status = models.CharField(max_length=100, choices=CHECKING_STATUS_CHOICES)
     checking_start_time = models.DateTimeField(null=True, blank=True)
     checking_end_time = models.DateTimeField(null=True, blank=True)

@@ -43,7 +43,9 @@ def parse_all_of_group_contests(group: Group):
 def update_contest_data(json_dictionary, group: Group):
     results = json_dictionary['ok']['result']
     contests = json_dictionary['ok']['contest']
+    count = 0
     for ind, result in enumerate(results):
+        count += 1
         try:
             contest = Contest.objects.get(contest_id=contests[ind]['contest-id'])
             print('Updating', contests[ind]['contest-id'])
@@ -55,10 +57,13 @@ def update_contest_data(json_dictionary, group: Group):
         contest.contest_id = contests[ind]['contest-id']
         contest.name = contests[ind]['contest-name']
         contest.scoring_model = get_scoring_model(results[ind]['scoring-model'])
-        contest.group = contest.group if group is None else group
+
         contest.save()
+        if group:
+            contest.group.add(group)
 
         parse_problems(result['problems'], contest)
+        print(count)
 
 
 def parse_problems(problems, contest):

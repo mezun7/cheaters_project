@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'checker',
-    'bootstrap4'
+    'bootstrap4',
+    'checker.templatetags.form_extras'
 ]
 
 MIDDLEWARE = [

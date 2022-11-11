@@ -1,0 +1,103 @@
+{% extends 'checker/base.html' %}
+{% load static %}
+{% block navbar %}
+{% endblock %}
+{% block title %}
+    Группа {{ page_title }}
+{% endblock %}
+{% block right_upper_button %}
+
+{% endblock %}
+{% block nav_items_messages %}
+{% endblock %}
+{% block content %}
+
+    <!-- End of Topbar -->
+
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        {#                    <h1 class="h3 mb-2 text-gray-800">Tables</h1>#}
+        {#                    <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below.#}
+        {#                        For more information about DataTables, please visit the <a target="_blank"#}
+        {#                            href="https://datatables.net">official DataTables documentation</a>.</p>#}
+
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">{{ page_title }}</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Название контеста</th>
+                            <th>Количество задач</th>
+                            <th>Последнее обновление посылок</th>
+                            <th>Последнее обновление задач</th>
+                            <th>Последняя проверка</th>
+                            <th>Ручная проверка</th>
+                            <th>Списываний</th>
+                            <th>Действия с контестом</th>
+
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>#</th>
+                            <th>Название контеста</th>
+                            <th>Количество задач</th>
+                            <th>Последнее обновление посылок</th>
+                            <th>Последнее обновление задач</th>
+                            <th>Последняя проверка</th>
+                            <th>Ручная проверка</th>
+                            <th>Списываний</th>
+                            <th>Действия с контестом</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        {% for contest in contests %}
+
+                            <tr class="text-center">
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ contest.name }}</td>
+                                <td>{{ contest.contestproblem_set.count }}</td>
+                                <td>{{ contest.last_attempt_parsing_time }}</td>
+                                <td>{{ contest.last_contest_problems_parsing_time }}</td>
+                                <td>{{ contest.last_check_time }}</td>
+                                <td>Ручная проверка</td>
+                                <td>Списываний</td>
+                                <td>
+                                    <a href="{% url 'checker:start_sync' contest.pk %}"
+                                       class="btn btn-info btn-circle" >
+                                        <i class="fas fa-user-check"></i>
+                                    </a>
+                                    <a href="{% url 'checker:sync_contest' group.pk contest.pk %}"
+                                       class="btn btn-success btn-circle" >
+                                        <i class="fas fa-sync"></i>
+                                    </a>
+                                    <a href="{% url 'checker:edit_contest_threshold' group.pk contest.pk %}"
+                                       class="btn btn-warning btn-circle" >
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{##}
+{#    {% include 'checker/addGroupModal.html' %}#}
+{#    {% include 'checker/DeleteGroupModal.html' %}#}
+    <!-- /.container-fluid -->
+
+
+{% endblock %}

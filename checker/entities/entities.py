@@ -4,6 +4,7 @@ CONTEST_TYPE_CHOICES = (
 )
 
 CHECKING_STATUS_CHOICES = (
+    ('NOT_STARTED', 'Pending start'),
     ('CHECKING', 'Started checking'),
     ('NOT_SEEN', 'Checked, but not seen'),
     ('CHEATED', 'This attempts was cheated'),
@@ -33,3 +34,9 @@ AUTH_TYPE_CHOICES = (
     ('p', 'pcms auth'),
     ('b', 'builtin auth')
 )
+
+CODEMIRROR_LANG_PARAMS = {
+    'py': 'text/x-python',
+    'cpp': 'text/x-c++src',
+    'pas': 'text/x-pascal'
+}

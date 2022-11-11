@@ -1,0 +1,90 @@
+{% extends 'checker/base.html' %}
+{% load static %}
+{% load form_extras %}
+{% block navbar %}{% endblock %}
+{% block nav_items_messages %}{% endblock %}
+{% block right_upper_button %}{% endblock %}
+{% block content %}
+    <script type="text/javascript">mergelyCompare('{{ lang }}', {{ lhs|safe }}, {{ rhs|safe }});</script>
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        {#                    <h1 class="h3 mb-2 text-gray-800">Tables</h1>#}
+        {#                    <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below.#}
+        {#                        For more information about DataTables, please visit the <a target="_blank"#}
+        {#                            href="https://datatables.net">official DataTables documentation</a>.</p>#}
+
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">{{ page_title }}</h6>
+
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="m-0 font-weight-bold text-warning">
+                            Problem
+                            LHS: {{ aj.attempt_lhs.problem_contest.alias }}. {{ aj.attempt_lhs.problem_contest.problem.name }}
+                        </div>
+                        <div class="m-0 font-weight-bold text-secondary">
+                            Contest LHS: {{ aj.attempt_lhs.problem_contest.contest }}
+                        </div>
+                        <div class="m-0 font-weight-bold text-secondary">
+                            Participant LHS: {{ aj.attempt_lhs.participant }}
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="m-0 font-weight-bold text-warning">
+                            Problem
+                            RHS: {{ aj.attempt_rhs.problem_contest.alias }}. {{ aj.attempt_rhs.problem_contest.problem.name }}
+                        </div>
+                        <div class="m-0 font-weight-bold text-secondary">
+                            Contest RHS: {{ aj.attempt_rhs.problem_contest.contest }}
+                        </div>
+
+
+                        <div class="m-0 font-weight-bold text-secondary">
+                            Participant RHS: {{ aj.attempt_rhs.participant }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <a class="btn- btn-info text-center">Предыдущие посылки</a>
+                    <a class="btn btn-danger text-center">Списали</a>
+                    <a class="btn btn-success text-center">Не списали</a>
+                    <a class="btn btn-info text-center">Следующие посылки</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="display: block; clear: both;" id="mergely-compare">
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+{% endblock %}
+
+{% block custom_header_meta %}
+    <link href="{% static 'checker/css/mergely/mergely.css' %}" rel="stylesheet">
+    <link href="{% static 'checker/css/mergely/codemirror.css' %}" rel="stylesheet">
+    <link href="{% static 'checker/css/mergely/admin.css' %}" rel="stylesheet">
+    <script src="{% static 'checker/js/mergely/codemirror.js' %}"></script>
+    <script src="{% static 'checker/js/mergely/mergely.js' %}"></script>
+    <script src="{% static 'checker/js/mergely/clike.js' %}"></script>
+
+    <script src="{% static 'checker/js/mergely/jsf.js' %}"></script>
+    <script src="{% static 'checker/js/mergely/main.js' %}"></script>
+        <script type="text/javascript">document.onkeyup = function () {
+        {#var e = e || window.event; // for IE to cover IEs window event-object#}
+        {#    alert(1);#}
+        if (e.altKey && e.which == 65) {
+            alert('Keyboard shortcut working!');
+            return false;
+        }
+    }</script>
+
+{% endblock %}
