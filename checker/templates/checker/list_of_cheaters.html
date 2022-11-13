@@ -77,7 +77,7 @@
                     // This data: could alternatively be displayed with the serializer's ReadOnlyField as well, as seen in the minimal example.
                     {
                         "data": "id", render: function (data, type, row) {
-                            return '<a href="/check_attempts/' + data + '/">' + data + '</a>';
+                            return '<a href="/check_attempts/' + data + '/?type=all_cheaters">' + data + '</a>';
                         }
                     },
                     {

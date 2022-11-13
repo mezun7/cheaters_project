@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from checker.entities.entities import CODEMIRROR_LANG_PARAMS
-from checker.helpers.helpers import get_menu_info, get_raw_str
+from checker.helpers.helpers import get_menu_info, get_raw_str, get_next
 from checker.models import Group, Contest, AttemptsCheckJobs
 from checker.tasks import start_cheaters_checking_job
 
@@ -53,10 +53,20 @@ def checking_in_progress(request):
 
 @login_required()
 def check_attempts(request, attempts_check_jobs_id):
+
     a_j: AttemptsCheckJobs = AttemptsCheckJobs.objects.get(pk=attempts_check_jobs_id)
     context = get_menu_info(request, 'Checking attempts')
     context['lang'] = CODEMIRROR_LANG_PARAMS[a_j.attempt_lhs.source.path.split('.')[-1]]
     context['lhs'] = get_raw_str(a_j.attempt_lhs.source.path)
     context['rhs'] = get_raw_str(a_j.attempt_rhs.source.path)
     context['aj'] = a_j
+    type_of_page = request.GET['type'] if 'type' in request.GET.keys() else 'default'
+    context['type_of_page'] = type_of_page
+    next_aj, rvrs = get_next(a_j, type_of_page, request)
+    context['next_aj'] = next_aj
+    if 'result' in request.GET.keys():
+        a_j.status = request.GET['result']
+        a_j.save()
+
+        return HttpResponseRedirect(f'{rvrs}?type={type_of_page}')
     return render(request, 'checker/merger/merge.html', context=context)

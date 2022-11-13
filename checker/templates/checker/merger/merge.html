@@ -49,10 +49,17 @@
                     </div>
                 </div>
                 <div class="row">
-                    <a class="btn- btn-info text-center">Предыдущие посылки</a>
-                    <a class="btn btn-danger text-center">Списали</a>
-                    <a class="btn btn-success text-center">Не списали</a>
-                    <a class="btn btn-info text-center">Следующие посылки</a>
+                    {#                    <a class="btn- btn-info text-center">Предыдущие посылки</a>#}
+                    <a href="{% url 'checker:check_attempts' aj.pk %}?type={{ type_of_page }}&result=CHEATED"
+                       class="btn btn-danger text-center">Списали</a>
+                    <a href="{% url 'checker:check_attempts' aj.pk %}?type={{ type_of_page }}&result=NOT_CHEATED"
+                       class="btn btn-success text-center">Не
+                        списали</a>
+                    {% if next_aj %}
+                        <a href="{% url 'checker:check_attempts' next_aj.pk %}?type={{ type_of_page }}"
+                           class="btn btn-info text-center">Следующие посылки</a>
+                    {% endif %}
+
                 </div>
             </div>
             <div class="card-body">
@@ -78,7 +85,7 @@
 
     <script src="{% static 'checker/js/mergely/jsf.js' %}"></script>
     <script src="{% static 'checker/js/mergely/main.js' %}"></script>
-        <script type="text/javascript">document.onkeyup = function (e) {
+    <script type="text/javascript">document.onkeyup = function (e) {
         {#var e = e || window.event; // for IE to cover IEs window event-object#}
         {#    alert(1);#}
         if (e.altKey && e.which == 65) {

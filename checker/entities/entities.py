@@ -40,3 +40,10 @@ CODEMIRROR_LANG_PARAMS = {
     'cpp': 'text/x-c++src',
     'pas': 'text/x-pascal'
 }
+
+TYPES_OF_PAGES = {
+    'default': {'reverse': 'checker:pending_manual_check', 'statuses': ['NOT_SEEN']},
+    'checking_in_progress': {'reverse': 'checker:checking_in_progress', 'statuses': ['NOT_STARTED', 'CHECKING']},
+    'pending_manual_check': {'reverse': 'checker:pending_manual_check', 'statuses': ['NOT_SEEN']},
+    'all_cheaters': {'reverse': 'checker:all_cheaters', 'statuses': ['CHEATED']}
+}

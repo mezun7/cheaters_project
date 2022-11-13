@@ -2,9 +2,11 @@ import json
 import os
 import urllib
 
-from django.db.models import Min, Q, F
+from django.db.models import Min, Q, F, Subquery
+from django.urls import reverse
 
 from cheaters_project import settings
+from checker.entities.entities import TYPES_OF_PAGES
 from checker.models import Group, Contest, AttemptsCheckJobs
 
 
@@ -69,3 +71,16 @@ def check_login_password_exists(login: str, password: str, api_url: str) -> bool
         json_dictionary = json.loads(url.read().decode())
     # print(json_dictionary, type(json_dictionary))
     return 'ok' in json_dictionary.keys()
+
+
+def get_next(a_j: AttemptsCheckJobs, type_of_page, request):
+    next_aj = AttemptsCheckJobs.objects. \
+            filter(Q(pk__gt=a_j.pk) &
+                   get_attempts_checking_jobs_statement(request, TYPES_OF_PAGES[type_of_page]['statuses'])).order_by(
+            'pk').first()
+    if next_aj is None:
+        rvrs = reverse(f'checker:{type_of_page}')
+    else:
+        rvrs = reverse('checker:check_attempts', kwargs={"attempts_check_jobs_id": next_aj.pk})
+    return next_aj, rvrs
+

@@ -136,3 +136,4 @@ class AttemptsCheckJobs(models.Model):
 
     class Meta:
         unique_together = ('attempt_lhs', 'attempt_rhs')
+        ordering = ['pk']
