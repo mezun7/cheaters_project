@@ -78,11 +78,13 @@
 
     <script src="{% static 'checker/js/mergely/jsf.js' %}"></script>
     <script src="{% static 'checker/js/mergely/main.js' %}"></script>
-        <script type="text/javascript">document.onkeyup = function () {
+        <script type="text/javascript">document.onkeyup = function (e) {
         {#var e = e || window.event; // for IE to cover IEs window event-object#}
         {#    alert(1);#}
         if (e.altKey && e.which == 65) {
             alert('Keyboard shortcut working!');
+            console.log(e.code.toString());
+            console.log(e.which.toString());
             return false;
         }
     }</script>

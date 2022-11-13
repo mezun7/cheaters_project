@@ -118,6 +118,7 @@ def parse_contest_attempts(group: Group, contest: Contest, count=50):
                                           attempt_json['session'][0]['party-name'], contest)
             print(f'Processing {participant} with job-id {run_pcms_id}')
             attempt_db.pcms_id = run_pcms_id
+            attempt_db.alias = int(run_pcms_id.split('.')[-1])
             attempt_db.score = int(attempt_json['score'])
             attempt_db.outcome = attempt_json['outcome'].split()[0]
             attempt_db.language = attempt_json['language-id']

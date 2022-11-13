@@ -1,5 +1,5 @@
 import json
-import urllib
+import urllib.request
 from datetime import datetime
 
 from django.contrib.auth.models import User
@@ -84,6 +84,7 @@ def parse_problems(problems, contest):
         contest_problem.problem = problem_db
         contest_problem.contest = contest
         contest_problem.alias = problem['alias']
-
-        contest_problem.save()
         contest.last_contest_problems_parsing_time = datetime.now()
+        contest.save()
+        contest_problem.save()
+

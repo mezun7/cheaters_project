@@ -59,19 +59,17 @@
         </li>
         <hr class="sidebar-divider my-0">
         <li class="nav-item active">
-            <a class="nav-link" href="index.html">
+            <a class="nav-link" href="{% url 'checker:checking_in_progress' %}">
                 {#                <i class="fas fa-fw fa-tachometer-alt"></i>#}
-                <span>Запущенные проверки {% if remaining_attempts_checking_running %}
-                    ({{ remaining_attempts_checking_running }})
-                {% endif %} </span></a>
+                <span>Запущенные проверки </span></a>
         </li>
 
         <!-- Divider -->
         <hr class="sidebar-divider my-0">
         <li class="nav-item active">
-            <a class="nav-link" href="index.html">
+            <a class="nav-link" href="{% url 'checker:pending_manual_check' %}">
                 {#                <i class="fas fa-fw fa-tachometer-alt"></i>#}
-                <span>Решения для проверки {% if attempts_to_check %}({{ attempts_to_check }}){% endif %}</span></a>
+                <span>Решения для проверки </span></a>
         </li>
         <hr class="sidebar-divider my-0">
         <li class="nav-item active">
@@ -452,7 +450,7 @@
                                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ all_approved_cheaters }}</div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                        <i class="fas fa-truck-monster fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
@@ -466,7 +464,7 @@
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                            <a href="{% url 'checker:automatic_checking' %}"
+                                            <a href="{% url 'checker:checking_in_progress' %}"
                                                class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                                 Запущенные проверки (осталось)
                                             </a>
@@ -474,7 +472,7 @@
                                         <div class="h5 mb-0 font-weight-bold text-gray-800"> {{ remaining_attempts_checking_running }}</div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                        <i class="fas fa-spinner fa-2x text-gray-300"></i>
                                     </div>
                                 </div>
                             </div>
@@ -535,7 +533,7 @@
                                         <div class="h5 mb-0 font-weight-bold text-gray-800">{{ attempts_to_check }}</div>
                                     </div>
                                     <div class="col-auto">
-                                        <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                        <i class="fas fa-ghost fa-2x text-gray-800"></i>
                                     </div>
                                 </div>
                             </div>
@@ -824,7 +822,7 @@
 <script src="{% static 'checker/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
 
 <!-- Page level custom scripts -->
-<script src="{% static 'checker/js/demo/datatables-demo.js' %}"></script>
+
 {% block custom_footer_scripts %}
 
 {% endblock %}

@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
+import pika
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,7 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'checker',
     'bootstrap4',
-    'checker.templatetags.form_extras'
+    'checker.templatetags.form_extras',
+    'django_celery_results',
+    'django_celery_beat',
+    'api',
+    'rest_framework',
+    'rest_framework_datatables',
+
 ]
 
 MIDDLEWARE = [
@@ -104,16 +112,32 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework_datatables.renderers.DatatablesRenderer',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework_datatables.filters.DatatablesFilterBackend',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework_datatables.pagination.DatatablesPageNumberPagination',
+    'PAGE_SIZE': 10,
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
+timezone = 'Europe/Moscow'
+CELERY_TIMEZONE = "Europe/Moscow"
+CELERY_TASK_TRACK_STARTED = True
+# CELERY_TASK_TIME_LIMIT = 30 * 60
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -129,3 +153,13 @@ main_pcms_api_url = 'https://pcms.litsey2.ru/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 SOURCE_FILES_SAVE_PATH = 'upload/sources/'
+REDIS_HOST = 'localhost'
+REDIS_PORT = '6379'
+broker_url = 'amqp://localhost:5672'
+redis_url = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/2'
+CELERY_BROKER_URL = broker_url
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+# CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/1'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'django-cache'
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240

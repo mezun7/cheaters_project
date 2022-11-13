@@ -5,10 +5,10 @@ from django.contrib.auth.decorators import login_required
 from django.urls import path, include, reverse_lazy
 from django.contrib.auth import views as auth_views
 
-from checker import views, contest_views
+from checker import views, contest_views, checking_views
 from checker.forms import LoginForm
 
-app_name = 'mainapplication'
+app_name = 'checker'
 
 urlpatterns = [
     # path('', views.index, name='index'),
@@ -37,7 +37,11 @@ urlpatterns = [
     path('start_sync/<int:group_id>/', views.start_sync, name='start_sync'),
     path('sync_contest/<int:group_id>/<int:contest_id>/', views.sync_contest, name='sync_contest'),
     path('edit_contest_threshold/<int:group_id>/<int:contest_id>/', contest_views.edit_contest_threshold, name='edit_contest_threshold'),
-    path('check_attempts/<int:attempts_check_jobs>/', contest_views.check_attempts, name='check_attempts')
+    path('check_attempts/<int:attempts_check_jobs_id>/', contest_views.check_attempts, name='check_attempts'),
+    path('check_my_groups/', checking_views.check_my_groups, name='check_my_groups'),
+    path('check_group/<int:group_id>/', checking_views.check_group, name='check_group'),
+    path('check_contest/<int:contest_id>/', checking_views.check_contest, name='check_contest'),
+    path('checking_in_progress/', checking_views.checking_in_progress, name='checking_in_progress')
     # path('contests/<int:group_id>', views.list_of_contests, name='list_of_contests'),
     # path('contest/<int:contest_pk>', views.contest_result, name='contest_result')
     # path('test/', views.test_upload, name='test-upload'),

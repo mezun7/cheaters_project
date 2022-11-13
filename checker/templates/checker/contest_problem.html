@@ -1,7 +1,7 @@
 {% extends 'checker/base.html' %}
 {% load form_extras %}
 {% block nav_items_messages %}
-
+{% load static %}
 {% endblock %}
 {% block navbar %}
 
@@ -101,4 +101,8 @@
 
 {% block right_upper_button %}
 
+{% endblock %}
+
+{% block custom_footer_scripts %}
+<script src="{% static 'checker/js/demo/datatables-demo.js' %}"></script>
 {% endblock %}

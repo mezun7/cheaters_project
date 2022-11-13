@@ -6,22 +6,22 @@ from checker.entities.entities import CONTEST_TYPE_CHOICES, CHECKING_STATUS_CHOI
 
 # Create your models here.
 
-class UserType(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    auth_type = models.CharField(max_length=2, choices=AUTH_TYPE_CHOICES)
-    login_pcms = models.CharField(max_length=100, null=True, blank=True)
-    password_pcms = models.CharField(max_length=100, null=True, blank=True)
-
-    def __str__(self):
-        return self.user.username
-
-    class Meta:
-        constraints = [models.CheckConstraint(
-            name="%(app_label)s_%(class)s If you choose builtin auth, you should enter pcms login and password",
-            check=models.Q(auth_type='p') | (models.Q(auth_type='b') &
-                                             models.Q(login_pcms__isnull=False) & models.Q(
-                        password_pcms__isnull=False))
-        )]
+# class UserType(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     auth_type = models.CharField(max_length=2, choices=AUTH_TYPE_CHOICES)
+#     login_pcms = models.CharField(max_length=100, null=True, blank=True)
+#     password_pcms = models.CharField(max_length=100, null=True, blank=True)
+#
+#     def __str__(self):
+#         return self.user.username
+#
+#     class Meta:
+#         constraints = [models.CheckConstraint(
+#             name="%(app_label)s_%(class)s If you choose builtin auth, you should enter pcms login and password",
+#             check=models.Q(auth_type='p') | (models.Q(auth_type='b') &
+#                                              models.Q(login_pcms__isnull=False) & models.Q(
+#                         password_pcms__isnull=False))
+#         )]
 
 
 class Group(models.Model):
@@ -33,6 +33,14 @@ class Group(models.Model):
 
     class Meta:
         unique_together = ('login', 'password', 'api_url')
+
+    def save(self, *args, **kwargs):
+        from checker.tasks import delayed_parse_group
+        super(Group, self).save(*args, **kwargs)
+        delayed_parse_group.delay(self.pk)
+
+    def __str__(self):
+        return self.name
 
 
 class Problem(models.Model):
@@ -46,7 +54,7 @@ class Problem(models.Model):
 
 class Contest(models.Model):
     users_have_access = models.ManyToManyField(User)
-    group = models.ManyToManyField(Group, null=True, blank=True)
+    group = models.ManyToManyField(Group, blank=True)
     name = models.CharField(max_length=1000)
     pcms_id = models.CharField(max_length=1000)
     contest_id = models.CharField(max_length=1000)
@@ -70,13 +78,13 @@ class ContestProblem(models.Model):
     threshold = models.FloatField(null=True, blank=True)
 
     def __str__(self):
-        return f'{self.contest}: {self.alias}. {self.problem}'
+        return f'{self.contest.name}: {self.alias}. {self.problem.name}'
 
 
 class Participant(models.Model):
     pcms_id = models.CharField(max_length=1000)
     name = models.CharField(max_length=1000)
-    contest = models.ManyToManyField(Contest, null=True, blank=True)
+    contest = models.ManyToManyField(Contest, blank=True)
 
     def __str__(self):
         return self.name
@@ -84,24 +92,30 @@ class Participant(models.Model):
 
 class Attempt(models.Model):
     pcms_id = models.CharField(max_length=1000)
+    alias = models.IntegerField(null=True)
     score = models.IntegerField()
     outcome = models.CharField(max_length=1000, choices=OUTCOME_CHOICES)
     status = models.CharField(max_length=1000, null=True, blank=True)
-    participant = models.ForeignKey(Participant, on_delete=models.Model)
-    problem_contest = models.ForeignKey(ContestProblem, on_delete=models.Model)
+    participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
+    problem_contest = models.ForeignKey(ContestProblem, on_delete=models.CASCADE)
     time = models.IntegerField()
     language = models.CharField(max_length=1000)
     source = models.FileField(upload_to='upload/sources/')
 
+    def __str__(self):
+        return f'{self.participant.name}, {self.alias}, PRB: {self.problem_contest.problem.name}'
+
     class Meta:
-        ordering = ['time', 'pcms_id']
+        ordering = ['alias', 'time', 'pcms_id']
+        unique_together = ('pcms_id',)
 
 
 class Job(models.Model):
-    contest = models.ManyToManyField(Contest, null=True, blank=True)
-    problems = models.ManyToManyField(Problem, blank=True, null=True)
-    participant = models.ManyToManyField(Participant, blank=True, null=True)
-    groups = models.ManyToManyField(Group, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    contest = models.ManyToManyField(Contest, blank=True)
+    problems = models.ManyToManyField(Problem, blank=True)
+    participant = models.ManyToManyField(Participant, blank=True)
+    groups = models.ManyToManyField(Group, blank=True)
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(null=True, blank=True)
 
@@ -110,17 +124,15 @@ class Job(models.Model):
 
 
 class AttemptsCheckJobs(models.Model):
-    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, null=True)
+    rmq_job_id = models.CharField(max_length=200, null=True, blank=True)
     attempt_lhs = models.ForeignKey(Attempt, on_delete=models.CASCADE, related_name='jobs_lhs')
     attempt_rhs = models.ForeignKey(Attempt, on_delete=models.CASCADE, related_name='jobs_rhs')
-    script_checking_result = models.FloatField(default=-1)
+    script_checking_result = models.FloatField(null=True)
     status = models.CharField(max_length=100, choices=CHECKING_STATUS_CHOICES)
     checking_start_time = models.DateTimeField(null=True, blank=True)
     checking_end_time = models.DateTimeField(null=True, blank=True)
+    manual_check_time = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         unique_together = ('attempt_lhs', 'attempt_rhs')
-
-
-class FileUploadTest(models.Model):
-    file = models.FileField(upload_to='upload/sources/')

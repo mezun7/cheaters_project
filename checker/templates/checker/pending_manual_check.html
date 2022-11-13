@@ -1,0 +1,89 @@
+{% extends 'checker/base.html' %}
+{% load static %}
+{% block navbar %}
+{% endblock %}
+{% block title %}
+    Группа {{ page_title }}
+{% endblock %}
+{% block right_upper_button %}
+{% endblock %}
+{% block nav_items_messages %}
+{% endblock %}
+{% block content %}
+
+    <!-- End of Topbar -->
+
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        {#                    <h1 class="h3 mb-2 text-gray-800">Tables</h1>#}
+        {#                    <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below.#}
+        {#                        For more information about DataTables, please visit the <a target="_blank"#}
+        {#                            href="https://datatables.net">official DataTables documentation</a>.</p>#}
+
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">{{ page_title }}</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Contest LHS</th>
+                            <th>LHS</th>
+                            <th>RHS</th>
+                            <th>Problem</th>
+                            <th>score</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>ID</th>
+                            <th>User started checking</th>
+                            <th>LHS</th>
+                            <th>RHS</th>
+                            <th>Problem</th>
+                            <th>score</th>
+                            <th>Status</th>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    {##}
+    {#    {% include 'checker/addGroupModal.html' %}#}
+    {#    {% include 'checker/DeleteGroupModal.html' %}#}
+    <!-- /.container-fluid -->
+
+
+{% endblock %}
+{% block custom_footer_scripts %}
+   <script>
+$(document).ready(function() {
+    var table = $('#dataTable').DataTable({
+        "serverSide": true,
+        "pageLength": 50,
+        "ajax": "/api/api/pending_manual_check/?format=datatables",
+        "columns": [
+            // Use dot notation to reference nested serializers.
+            // This data: could alternatively be displayed with the serializer's ReadOnlyField as well, as seen in the minimal example.
+            {"data": "id"},
+            {"data": "attempt_lhs.problem_contest.contest.name", "name": "attempt_lhs.problem_contest.contest.name"},
+            {"data": "attempt_lhs.participant.name", "name": "attempt_lhs.participant.name"},
+            {"data": "attempt_rhs.participant.name", "name": "attempt_rhs.participant.name"},
+            {"data": "attempt_rhs.problem_contest.problem.name", "name": "attempt_rhs.problem_contest.problem.name"},
+            {"data": "script_checking_result"},
+            {"data": "status"}
+        ]
+    });
+});
+</script>
+{% endblock %}

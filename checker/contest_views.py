@@ -26,17 +26,14 @@ def edit_contest_threshold(request, group_id, contest_id):
     context['contest'] = contest
     if request.POST:
         formset2 = ContestProblemsFormSet(request.POST)
-        print(formset2)
-        print(formset2.errors)
         if formset2.is_valid():
             formset2.save()
-            print('Here')
         return HttpResponseRedirect(reverse('checker:edit_contest_threshold',
                                             kwargs={'group_id': group_id, "contest_id": contest_id}))
     return render(request, 'checker/contest_problem.html', context=context)
 
 
-def check_attempts(request, attempts_check_jobs):
+def check_attempts(request, attempts_check_jobs_id):
     a_j: AttemptsCheckJobs = AttemptsCheckJobs.objects.first()
     context = get_menu_info(request, 'Checking attempts')
     context['lang'] = CODEMIRROR_LANG_PARAMS[a_j.attempt_lhs.source.path.split('.')[-1]]

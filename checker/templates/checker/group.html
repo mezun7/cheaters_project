@@ -6,7 +6,9 @@
     Группа {{ page_title }}
 {% endblock %}
 {% block right_upper_button %}
-
+        <a href="{% url 'checker:check_group' group.pk %}?from={{ request.path }}"
+       class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm"><i
+            class="fas fa-plus fa-sm text-white-50"></i> Проверить все контесты группы</a>
 {% endblock %}
 {% block nav_items_messages %}
 {% endblock %}
@@ -71,7 +73,7 @@
                                 <td>Ручная проверка</td>
                                 <td>Списываний</td>
                                 <td>
-                                    <a href="{% url 'checker:start_sync' contest.pk %}"
+                                    <a href="{% url 'checker:check_contest' contest.pk %}?from={{ request.path }}"
                                        class="btn btn-info btn-circle" >
                                         <i class="fas fa-user-check"></i>
                                     </a>
@@ -100,4 +102,7 @@
     <!-- /.container-fluid -->
 
 
+{% endblock %}
+{% block custom_footer_scripts %}
+<script src="{% static 'checker/js/demo/datatables-demo.js' %}"></script>
 {% endblock %}

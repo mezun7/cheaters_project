@@ -6,6 +6,9 @@
     <a href="#" data-toggle="modal" data-target="#addGroupModal"
        class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
             class="fas fa-plus fa-sm text-white-50"></i> Добавить группу</a>
+        <a href="{% url 'checker:check_my_groups' %}"
+       class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm"><i
+            class="fas fa-plus fa-sm text-white-50"></i> Проверить всё</a>
 {% endblock %}
 {% block nav_items_messages %}
 {% endblock %}
@@ -60,7 +63,7 @@
                                 <td>{{ group.last_contest_problems_parsing_time }}</td>
                                 <td>{{ group.last_check_time }}</td>
                                 <td>
-                                    <a href="{% url 'checker:start_sync' group.pk %}"
+                                    <a href="{% url 'checker:check_group' group.pk %}?from={{ request.path }}"
                                        class="btn btn-info btn-circle" >
                                         <i class="fas fa-user-check"></i>
                                     </a>
@@ -88,8 +91,11 @@
     </div>
 
     {% include 'checker/addGroupModal.html' %}
-    {% include 'checker/DeleteGroupModal.html' %}
+{#    {% include 'checker/DeleteGroupModal.html' %}#}
     <!-- /.container-fluid -->
 
 
+{% endblock %}
+{% block custom_footer_scripts %}
+<script src="{% static 'checker/js/demo/datatables-demo.js' %}"></script>
 {% endblock %}
