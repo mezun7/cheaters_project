@@ -1,7 +1,6 @@
 package main
 
 import (
-	"checker/internal/comparator"
 	"checker/internal/headquater"
 	"os"
 
@@ -23,16 +22,16 @@ type Source struct {
 */
 
 func main() {
-	fmt.Println("Diff\n", comparator.SourcesCompare([]string{""}, []string{""}))
+	//fmt.Println("Diff\n", comparator.SourcesCompare([]string{""}, []string{""}))
 	params := headquater.Params{
 		DbHost: os.Getenv(""),
 	}
 
-	headquater, err := headquater.NewHeadquater(params)
+	hq, err := headquater.NewHeadquater(params)
 	if err != nil {
-		fmt.Printf("failed to create headquater: %w", err)
+		fmt.Printf("failed to create hq: %w", err)
 		return
 	}
 
-	headquater.Start()
+	hq.Start()
 }
