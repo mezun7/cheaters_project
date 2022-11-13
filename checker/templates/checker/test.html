@@ -32,7 +32,7 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>ID </th>
                             <th>Contest LHS</th>
                             <th>LHS</th>
                             <th>RHS</th>
@@ -66,87 +66,97 @@
 
 {% endblock %}
 {% block custom_footer_scripts %}
-   <script>
-$(document).ready(function() {
-    var table = $('#dataTable').DataTable({
-        "serverSide": true,
-        "pageLength": 50,
-        "ajax": "/api/api/acj/?format=datatables",
-        "columns": [
-            // Use dot notation to reference nested serializers.
-            // This data: could alternatively be displayed with the serializer's ReadOnlyField as well, as seen in the minimal example.
-            {"data": "id"},
-            {"data": "attempt_lhs.problem_contest.contest.name", "name": "attempt_lhs.problem_contest.contest.name"},
-            {"data": "attempt_lhs.participant.name", "name": "attempt_lhs.participant.name"},
-            {"data": "attempt_rhs.participant.name", "name": "attempt_rhs.participant.name"},
-            {"data": "attempt_rhs.problem_contest.problem.name", "name": "attempt_rhs.problem_contest.problem.name"},
-            {"data": "script_checking_result"},
-            {"data": "status"}
-        ]
-    });
-    $('.btn-decade').on('click', function() {
-        table.columns().search('');
-        var rel = $(this).attr('rel');
-        if (rel) {
-            table.columns(3).search('^' + rel + '[0-9]$', true).draw();
-        } else {
-            table.draw();
-        }
-    });
-    $('#albums_minimal').DataTable({
-        "search": {"regex": true},
-        "language": {"searchPlaceholder": "regular expression"}
-    });
-    $('#albums_post').DataTable({
-        "serverSide": true,
-        "ajax": {
-            "url": "api/post-list/albums/?format=datatables",
-            "type": "POST",
-            "beforeSend": function(xhr) {
-                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token|escapejs }}");
-            }
-        },
-        "columns": [
-            {"data": "rank", "searchable": false},
-            {"data": "artist.name", "name": "artist.name"},
-            {"data": "name"},
-        ]
-    });
-    var albumFilterTable = $('#albums_filter').DataTable({
-        "serverSide": true,
-        "ajax": {
-            "url": "api/filter/albums/?format=datatables",
-            "type": "GET",
-        },
-        "columns": [
-            {"data": "rank", "searchable": false},
-            {"data": "artist_name", "name": "artist_name"},
-            {"data": "name"},
-        ]
-    });
-    yadcf.init(albumFilterTable, [
-        {
-            column_number: 1,
-            filter_type: 'multi_select',
-            filter_container_id: 'artist_select',
-            select_type: 'select2',
-            // static data can be declared here, otherwise it can be pulled via Ajax (see below)
-            // data: [{"value": 2, "label": "The Beatles"}]
-        }
-        ]
-    );
-    // Retrieve the full list of column options using an Ajax request
-    $.ajax({
-        type: "GET",
-        url: "/api/filter/albums/artist/options/",
-        success: function (res) {
-            var artistOptions = res.options;
-            yadcf.exRefreshColumnFilterWithDataProp(albumFilterTable, 1, artistOptions);
-        },
-        error: function (err) {
-            console.log('error: album artist options:', err);
-        }
-    });
-});
-</script>
+    <script>
+        $(document).ready(function () {
+            var table = $('#dataTable').DataTable({
+                "serverSide": true,
+                "pageLength": 50,
+                "ajax": "/api/api/acj/?format=datatables",
+                "columns": [
+                    // Use dot notation to reference nested serializers.
+                    // This data: could alternatively be displayed with the serializer's ReadOnlyField as well, as seen in the minimal example.
+                    {
+                        "data": "id", render: function(data, type, row) {
+                            return '<a href="/check_attempts/'+ data + '/">' + data + '</a>';
+                        }
+                    },
+                    {
+                        "data": "attempt_lhs.problem_contest.contest.name",
+                        "name": "attempt_lhs.problem_contest.contest.name"
+                    },
+                    {"data": "attempt_lhs.participant.name", "name": "attempt_lhs.participant.name"},
+                    {"data": "attempt_rhs.participant.name", "name": "attempt_rhs.participant.name"},
+                    {
+                        "data": "attempt_rhs.problem_contest.problem.name",
+                        "name": "attempt_rhs.problem_contest.problem.name"
+                    },
+                    {"data": "script_checking_result"},
+                    {"data": "status"}
+                ]
+            });
+            $('.btn-decade').on('click', function () {
+                table.columns().search('');
+                var rel = $(this).attr('rel');
+                if (rel) {
+                    table.columns(3).search('^' + rel + '[0-9]$', true).draw();
+                } else {
+                    table.draw();
+                }
+            });
+            $('#albums_minimal').DataTable({
+                "search": {"regex": true},
+                "language": {"searchPlaceholder": "regular expression"}
+            });
+            $('#albums_post').DataTable({
+                "serverSide": true,
+                "ajax": {
+                    "url": "api/post-list/albums/?format=datatables",
+                    "type": "POST",
+                    "beforeSend": function (xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token|escapejs }}");
+                    }
+                },
+                "columns": [
+                    {"data": "rank", "searchable": false},
+                    {"data": "artist.name", "name": "artist.name"},
+                    {"data": "name"},
+                ]
+            });
+            var albumFilterTable = $('#albums_filter').DataTable({
+                "serverSide": true,
+                "ajax": {
+                    "url": "api/filter/albums/?format=datatables",
+                    "type": "GET",
+                },
+                "columns": [
+                    {"data": "rank", "searchable": false},
+                    {"data": "artist_name", "name": "artist_name"},
+                    {"data": "name"},
+                ]
+            });
+            yadcf.init(albumFilterTable, [
+                    {
+                        column_number: 1,
+                        filter_type: 'multi_select',
+                        filter_container_id: 'artist_select',
+                        select_type: 'select2',
+                        // static data can be declared here, otherwise it can be pulled via Ajax (see below)
+                        // data: [{"value": 2, "label": "The Beatles"}]
+                    }
+                ]
+            );
+            // Retrieve the full list of column options using an Ajax request
+            $.ajax({
+                type: "GET",
+                url: "/api/filter/albums/artist/options/",
+                success: function (res) {
+                    var artistOptions = res.options;
+                    yadcf.exRefreshColumnFilterWithDataProp(albumFilterTable, 1, artistOptions);
+                },
+                error: function (err) {
+                    console.log('error: album artist options:', err);
+                }
+            });
+        });
+    </script>
 {% endblock %}

@@ -3,8 +3,9 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from checker.helpers.helpers import get_menu_info
-from checker.models import Group, Contest
+from checker.entities.entities import CODEMIRROR_LANG_PARAMS
+from checker.helpers.helpers import get_menu_info, get_raw_str
+from checker.models import Group, Contest, AttemptsCheckJobs
 from checker.tasks import start_cheaters_checking_job
 
 
@@ -48,3 +49,14 @@ def check_my_groups(request):
 def checking_in_progress(request):
     context = get_menu_info(request, 'Запущенные проверки')
     return render(request, 'checker/checkings_in_progress.html', context)
+
+
+@login_required()
+def check_attempts(request, attempts_check_jobs_id):
+    a_j: AttemptsCheckJobs = AttemptsCheckJobs.objects.get(pk=attempts_check_jobs_id)
+    context = get_menu_info(request, 'Checking attempts')
+    context['lang'] = CODEMIRROR_LANG_PARAMS[a_j.attempt_lhs.source.path.split('.')[-1]]
+    context['lhs'] = get_raw_str(a_j.attempt_lhs.source.path)
+    context['rhs'] = get_raw_str(a_j.attempt_rhs.source.path)
+    context['aj'] = a_j
+    return render(request, 'checker/merger/merge.html', context=context)

@@ -33,11 +33,4 @@ def edit_contest_threshold(request, group_id, contest_id):
     return render(request, 'checker/contest_problem.html', context=context)
 
 
-def check_attempts(request, attempts_check_jobs_id):
-    a_j: AttemptsCheckJobs = AttemptsCheckJobs.objects.first()
-    context = get_menu_info(request, 'Checking attempts')
-    context['lang'] = CODEMIRROR_LANG_PARAMS[a_j.attempt_lhs.source.path.split('.')[-1]]
-    context['lhs'] = get_raw_str(a_j.attempt_lhs.source.path)
-    context['rhs'] = get_raw_str(a_j.attempt_rhs.source.path)
-    context['aj'] = a_j
-    return render(request, 'checker/merger/merge.html', context=context)
+
