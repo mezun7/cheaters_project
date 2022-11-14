@@ -27,7 +27,7 @@ func main() {
 		DbHost: os.Getenv(""),
 	}
 
-	hq, err := headquater.NewHeadquater(params)
+	hq, err := headquater.NewHeadquarter(params)
 	if err != nil {
 		fmt.Printf("failed to create hq: %w", err)
 		return

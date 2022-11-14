@@ -5,13 +5,14 @@ import (
 	"fmt"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"gorm.io/gorm/schema"
 	"log"
 	"strconv"
 )
 
 type Params struct {
+	Local       bool
 	DbHost      string
 	DbUser      string
 	DbPassword  string
@@ -19,7 +20,7 @@ type Params struct {
 	queueName   string
 }
 
-type Headquater struct {
+type Headquarter struct {
 	db   *gorm.DB
 	conn *amqp.Connection
 
@@ -27,29 +28,38 @@ type Headquater struct {
 	workerCount int
 }
 
-func NewHeadquater(params Params) (*Headquater, error) {
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai",
-		params.DbHost,
-		params.DbUser,
-		params.DbPassword,
-	)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		NamingStrategy: schema.NamingStrategy{
-			TablePrefix:   "checker_", // table name prefix, table for `User` would be `t_users`
-			SingularTable: true,       // use singular table name, table for `User` would be `user` with this option enabled
-			NoLowerCase:   true,       // skip the snake_casing of names
-		},
-	})
-	if err != nil {
-		return nil, err
+func NewHeadquarter(params Params) (*Headquarter, error) {
+	var db *gorm.DB
+	var conn *amqp.Connection
+	if params.Local {
+		var err error
+		db, err = gorm.Open(sqlite.Open("../db2.sqlite3"), &gorm.Config{})
+		if err != nil {
+			return nil, err
+		}
+		conn, err = amqp.Dial("amqp://guest:guest@localhost:5672/")
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai",
+			params.DbHost,
+			params.DbUser,
+			params.DbPassword,
+		)
+		var err error
+		db, err = gorm.Open(postgres.Open(dsn))
+		if err != nil {
+			return nil, err
+		}
+
+		conn, err = amqp.Dial("amqp://guest:guest@localhost:5672/")
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
-	if err != nil {
-		return nil, err
-	}
-
-	return &Headquater{
+	return &Headquarter{
 		db:          db,
 		conn:        conn,
 		workerCount: params.workerCount,
@@ -57,7 +67,7 @@ func NewHeadquater(params Params) (*Headquater, error) {
 	}, nil
 }
 
-func (h *Headquater) Start() {
+func (h *Headquarter) Start() {
 	var forever chan struct{}
 	for i := 0; i < h.workerCount; i++ {
 		go func() {
