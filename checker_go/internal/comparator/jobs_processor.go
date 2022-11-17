@@ -51,12 +51,12 @@ func JobProcess(db *gorm.DB, jobId int64) {
 		var attemptRhs Attempt
 		db.First(&attemptRhs, "id = ?", job.attemptRhsId)
 
-		sourceLhs, err := ioutil.ReadFile(attemptLhs.source)
+		sourceLhs, err := ioutil.ReadFile("/home/itl/cheaters_project/media/" + attemptLhs.source)
 		if err != nil {
 			log.Printf("Failed to read a source file, msg: %v", err)
 			return err
 		}
-		sourceRhs, err := ioutil.ReadFile(attemptRhs.source)
+		sourceRhs, err := ioutil.ReadFile("/home/itl/cheaters_project/media/" + attemptRhs.source)
 		if err != nil {
 			log.Printf("Failed to read a source file, msg: %v", err)
 			return err

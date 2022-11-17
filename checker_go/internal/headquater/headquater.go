@@ -16,8 +16,8 @@ type Params struct {
 	DbHost      string
 	DbUser      string
 	DbPassword  string
-	workerCount int
-	queueName   string
+	WorkerCount int
+	QueueName   string
 }
 
 type Headquarter struct {
@@ -37,7 +37,7 @@ func NewHeadquarter(params Params) (*Headquarter, error) {
 		if err != nil {
 			return nil, err
 		}
-		conn, err = amqp.Dial("amqp://guest:guest@localhost:5672/")
+		conn, err = amqp.Dial("amqp://localhost:5672/")
 		if err != nil {
 			return nil, err
 		}
@@ -59,16 +59,19 @@ func NewHeadquarter(params Params) (*Headquarter, error) {
 		}
 	}
 
+	log.Printf("DEBUG: successfully connected to DB and RMQ")
+
 	return &Headquarter{
 		db:          db,
 		conn:        conn,
-		workerCount: params.workerCount,
-		queueName:   params.queueName,
+		workerCount: params.WorkerCount,
+		queueName:   params.QueueName,
 	}, nil
 }
 
 func (h *Headquarter) Start() {
 	var forever chan struct{}
+	log.Printf("DEBUG: Running %v workers", h.workerCount)
 	for i := 0; i < h.workerCount; i++ {
 		go func() {
 			ch, _ := h.conn.Channel()
@@ -102,8 +105,10 @@ func (h *Headquarter) Start() {
 			if err != nil {
 				return
 			}
+			log.Printf("Start jobs consuming...")
 			for d := range msgs {
 				jobId, _ := strconv.Atoi(string(d.Body))
+				log.Printf("Processing jobId=%v", jobId)
 				cmp.JobProcess(h.db, int64(jobId))
 			}
 		}()

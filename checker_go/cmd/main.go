@@ -7,24 +7,13 @@ import (
 	"fmt"
 )
 
-/*
-type Source struct {
-    file string
-    relativePath string
-    userId string
-    problemId string
-    runId string
-    attempt int
-    score int
-    tokens []string
-    compare bool
-}
-*/
-
 func main() {
 	//fmt.Println("Diff\n", comparator.SourcesCompare([]string{""}, []string{""}))
 	params := headquater.Params{
-		DbHost: os.Getenv(""),
+		DbHost:      os.Getenv(""),
+		WorkerCount: 10,
+		Local:       true,
+		QueueName:   "checker",
 	}
 
 	hq, err := headquater.NewHeadquarter(params)
