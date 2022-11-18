@@ -85,15 +85,37 @@
 
     <script src="{% static 'checker/js/mergely/jsf.js' %}"></script>
     <script src="{% static 'checker/js/mergely/main.js' %}"></script>
-    <script type="text/javascript">document.onkeyup = function (e) {
-        {#var e = e || window.event; // for IE to cover IEs window event-object#}
-        {#    alert(1);#}
-        if (e.altKey && e.which == 65) {
-            alert('Keyboard shortcut working!');
-            console.log(e.code.toString());
-            console.log(e.which.toString());
-            return false;
-        }
-    }</script>
+    {#    <script type="text/javascript">document.onkeyup = function (e) {#}
+    {#var e = e || window.event; // for IE to cover IEs window event-object#}
+    {#    alert(1);#}
+    {#    if (e.altKey && e.which == 65) {#}
+    {#    alert('Keyboard shortcut working!');#}
+    {#    console.log(e.code.toString());#}
+    {#    console.log(e.which.toString());#}
+    {#    return false;#}
+    {#    }#}
+    {#    }</script>#}
+
+    <script src="{% static 'checker/js/hotkeys.js' %}"></script>
+    <script type="text/javascript">
+        hotkeys('Y', function () {
+            window.location.href = '{% url 'checker:check_attempts' aj.pk %}?type={{ type_of_page }}&result=CHEATED';
+            {#return false;#}
+        });
+
+        hotkeys('P', function () {
+            window.location.href = '{% url 'checker:check_attempts' next_aj.pk %}?type={{ type_of_page }}';
+            {#return false;#}
+        });
+
+        hotkeys('N', function () {
+            window.location.href = '{% url 'checker:check_attempts' aj.pk %}?type={{ type_of_page }}&result=NOT_CHEATED';
+            {#return false;#}
+        });
+        hotkeys('B', function () {
+            alert('go back');
+            {#return false;#}
+        });
+    </script>
 
 {% endblock %}
