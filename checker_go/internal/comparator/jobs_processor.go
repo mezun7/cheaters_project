@@ -41,41 +41,47 @@ func (Attempt) TableName() string {
 }
 
 func JobProcess(db *gorm.DB, jobId int64) {
-	err := db.Transaction(func(tx *gorm.DB) error {
-		var job AttemptsCheckJobs
-		db.First(&job, jobId)
-		// TODO: this is useless inside a transaction
-		job.Status = "CHECKING"
+	var job AttemptsCheckJobs
+	db.First(&job, jobId)
+	if db.Error != nil {
+		log.Printf("Failed to read a job, msg: #{err}")
+		return
+	}
+	job.Status = "CHECKING"
 
-		var attemptLhs Attempt
-		db.First(&attemptLhs, job.AttemptLhsId)
-		var attemptRhs Attempt
-		db.First(&attemptRhs, job.AttemptRhsId)
+	db.Save(&job)
+	if db.Error != nil {
+		log.Printf("Failed to update a status, msg: #{err}")
+		return
+	}
 
-		// TODO: get rid of deprecated functions
-		sourceLhs, err := ioutil.ReadFile("/home/itl/cheaters_project/media/" + attemptLhs.Source)
-		if err != nil {
-			log.Printf("Failed to read a Source file, msg: %v", err)
-			return err
-		}
-		sourceRhs, err := ioutil.ReadFile("/home/itl/cheaters_project/media/" + attemptRhs.Source)
-		if err != nil {
-			log.Printf("Failed to read a Source file, msg: %v", err)
-			return err
-		}
+	var attemptLhs Attempt
+	db.First(&attemptLhs, job.AttemptLhsId)
+	var attemptRhs Attempt
+	db.First(&attemptRhs, job.AttemptRhsId)
 
-		tokensLhs := Tokenize(string(sourceLhs), attemptLhs.Source)
-		tokensRhs := Tokenize(string(sourceRhs), attemptRhs.Source)
-
-		job.ScriptCheckingResult = float64(int(SourcesCompare(tokensLhs, tokensRhs)*100)) / 100
-		job.CheckingEndTime = time.Now()
-		job.Status = "NOT_SEEN"
-
-		db.Save(&job)
-		return nil
-	})
+	// TODO: get rid of deprecated functions
+	sourceLhs, err := ioutil.ReadFile("/home/itl/cheaters_project/media/" + attemptLhs.Source)
 	if err != nil {
-		log.Printf("Transaction failed, msg: #{err}")
+		log.Printf("Failed to read a LHS Source file, msg: %v", err)
+		return
+	}
+	sourceRhs, err := ioutil.ReadFile("/home/itl/cheaters_project/media/" + attemptRhs.Source)
+	if err != nil {
+		log.Printf("Failed to read a RHS Source file, msg: %v", err)
+		return
+	}
+
+	tokensLhs := Tokenize(string(sourceLhs), attemptLhs.Source)
+	tokensRhs := Tokenize(string(sourceRhs), attemptRhs.Source)
+
+	job.ScriptCheckingResult = float64(int(SourcesCompare(tokensLhs, tokensRhs)*100)) / 100
+	job.CheckingEndTime = time.Now()
+	job.Status = "NOT_SEEN"
+
+	db.Save(&job)
+	if db.Error != nil {
+		log.Printf("Failed to save checked job, msg: #{err}")
 		return
 	}
 }

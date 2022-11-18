@@ -1,4 +1,4 @@
-package headquater
+package headquarter
 
 import (
 	cmp "checker/internal/comparator"
@@ -31,13 +31,9 @@ type Headquarter struct {
 func NewHeadquarter(params Params) (*Headquarter, error) {
 	var db *gorm.DB
 	var conn *amqp.Connection
+	var err error
 	if params.Local {
-		var err error
 		db, err = gorm.Open(sqlite.Open("../db2.sqlite3"))
-		if err != nil {
-			return nil, err
-		}
-		conn, err = amqp.Dial("amqp://localhost:5672/")
 		if err != nil {
 			return nil, err
 		}
@@ -47,16 +43,14 @@ func NewHeadquarter(params Params) (*Headquarter, error) {
 			params.DbUser,
 			params.DbPassword,
 		)
-		var err error
 		db, err = gorm.Open(postgres.Open(dsn))
 		if err != nil {
 			return nil, err
 		}
-
-		conn, err = amqp.Dial("amqp://guest:guest@localhost:5672/")
-		if err != nil {
-			return nil, err
-		}
+	}
+	conn, err = amqp.Dial("amqp://guest:guest@localhost:5672/")
+	if err != nil {
+		return nil, err
 	}
 
 	log.Printf("DEBUG: successfully connected to DB and RMQ")
@@ -71,7 +65,7 @@ func NewHeadquarter(params Params) (*Headquarter, error) {
 
 func (h *Headquarter) Start() {
 	var forever chan struct{}
-	log.Printf("DEBUG: Running %v workers", h.workerCount)
+	log.Printf("Running %v workers", h.workerCount)
 	for i := 0; i < h.workerCount; i++ {
 		go func() {
 			ch, _ := h.conn.Channel()
