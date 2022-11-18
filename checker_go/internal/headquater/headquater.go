@@ -33,7 +33,7 @@ func NewHeadquarter(params Params) (*Headquarter, error) {
 	var conn *amqp.Connection
 	if params.Local {
 		var err error
-		db, err = gorm.Open(sqlite.Open("../db2.sqlite3"), &gorm.Config{})
+		db, err = gorm.Open(sqlite.Open("../db2.sqlite3"))
 		if err != nil {
 			return nil, err
 		}

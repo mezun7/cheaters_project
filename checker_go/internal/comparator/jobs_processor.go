@@ -8,14 +8,14 @@ import (
 )
 
 type AttemptsCheckJobs struct {
-	id                   int `gorm:"primaryKey"`
-	jobId                string
-	attemptLhsId         int
-	attemptRhsId         int
-	scriptCheckingResult float64
-	status               string
-	checkingStartTime    time.Time
-	checkingEndTime      time.Time
+	ID                   uint `gorm:"primaryKey"`
+	JobId                string
+	AttemptLhsId         int
+	AttemptRhsId         int
+	ScriptCheckingResult float64
+	Status               string
+	CheckingStartTime    time.Time
+	CheckingEndTime      time.Time
 }
 
 func (AttemptsCheckJobs) TableName() string {
@@ -23,17 +23,17 @@ func (AttemptsCheckJobs) TableName() string {
 }
 
 type Attempt struct {
-	id               int `gorm:"primaryKey"`
-	pcmsId           string
-	score            int
-	outcome          string
-	status           string
-	participantId    int64
-	problemContestId int64
-	time             int
-	language         string
-	source           string
-	alias            int
+	ID               uint `gorm:"primaryKey"`
+	PcmsId           string
+	Score            int
+	Outcome          string
+	Status           string
+	ParticipantId    int64
+	ProblemContestId int64
+	Time             int
+	Language         string
+	Source           string
+	Alias            int
 }
 
 func (Attempt) TableName() string {
@@ -43,31 +43,33 @@ func (Attempt) TableName() string {
 func JobProcess(db *gorm.DB, jobId int64) {
 	err := db.Transaction(func(tx *gorm.DB) error {
 		var job AttemptsCheckJobs
-		db.First(&job, "id = ?", jobId)
-		job.status = "CHECKING"
+		db.First(&job, jobId)
+		// TODO: this is useless inside a transaction
+		job.Status = "CHECKING"
 
 		var attemptLhs Attempt
-		db.First(&attemptLhs, "id = ?", job.attemptLhsId)
+		db.First(&attemptLhs, job.AttemptLhsId)
 		var attemptRhs Attempt
-		db.First(&attemptRhs, "id = ?", job.attemptRhsId)
+		db.First(&attemptRhs, job.AttemptRhsId)
 
-		sourceLhs, err := ioutil.ReadFile("/home/itl/cheaters_project/media/" + attemptLhs.source)
+		// TODO: get rid of deprecated functions
+		sourceLhs, err := ioutil.ReadFile("/home/itl/cheaters_project/media/" + attemptLhs.Source)
 		if err != nil {
-			log.Printf("Failed to read a source file, msg: %v", err)
+			log.Printf("Failed to read a Source file, msg: %v", err)
 			return err
 		}
-		sourceRhs, err := ioutil.ReadFile("/home/itl/cheaters_project/media/" + attemptRhs.source)
+		sourceRhs, err := ioutil.ReadFile("/home/itl/cheaters_project/media/" + attemptRhs.Source)
 		if err != nil {
-			log.Printf("Failed to read a source file, msg: %v", err)
+			log.Printf("Failed to read a Source file, msg: %v", err)
 			return err
 		}
 
-		tokensLhs := Tokenize(string(sourceLhs), attemptLhs.source)
-		tokensRhs := Tokenize(string(sourceRhs), attemptRhs.source)
+		tokensLhs := Tokenize(string(sourceLhs), attemptLhs.Source)
+		tokensRhs := Tokenize(string(sourceRhs), attemptRhs.Source)
 
-		job.scriptCheckingResult = float64(int(SourcesCompare(tokensLhs, tokensRhs)*100)) / 100
-		job.checkingEndTime = time.Now()
-		job.status = "NOT_SEEN"
+		job.ScriptCheckingResult = float64(int(SourcesCompare(tokensLhs, tokensRhs)*100)) / 100
+		job.CheckingEndTime = time.Now()
+		job.Status = "NOT_SEEN"
 
 		db.Save(&job)
 		return nil
