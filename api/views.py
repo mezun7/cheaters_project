@@ -4,7 +4,7 @@ from django.shortcuts import render
 from rest_framework import viewsets, permissions
 
 from api.serializers import ParticipantSerializer, ContestSerializer, AttemptSerializer, AttemptsCheckJobsSerializer
-from checker.helpers.helpers import get_attempts_checking_jobs_statement
+from checker.helpers.helpers import get_attempts_checking_jobs_statement, get_attempts_checking_jobs_score_statement
 from checker.models import Participant, Contest, Attempt, AttemptsCheckJobs
 
 
@@ -55,7 +55,8 @@ class PendingManualCheckViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         statement = get_attempts_checking_jobs_statement(self.request, ['NOT_SEEN'])
-        queryset = AttemptsCheckJobs.objects.filter(statement).distinct().order_by('pk')
+        statement_score = get_attempts_checking_jobs_score_statement()
+        queryset = AttemptsCheckJobs.objects.filter(statement & statement_score).distinct().order_by('pk')
         return queryset
 
 

@@ -10,17 +10,21 @@ from checker.entities.entities import TYPES_OF_PAGES
 from checker.models import Group, Contest, AttemptsCheckJobs
 
 
-def get_attempts_checking_jobs_statement(request, statuses):
+def get_attempts_checking_jobs_statement(request: object, statuses: object) -> object:
     statement_lhs = Q(attempt_lhs__problem_contest__contest__group__users_have_access__in=[request.user]) & Q(
         status__in=statuses)
     statement_rhs = Q(
         attempt_rhs__problem_contest__contest__group__users_have_access__in=[request.user]) & Q(status__in=statuses)
     return statement_lhs | statement_rhs
 
+def get_attempts_checking_jobs_score_statement() -> object:
+    statement_score = Q(script_checking_result__lte=F('attempt_lhs__problem_contest__threshold'))
+
+    return statement_score
 
 def get_attempts_to_check(request):
     statement = get_attempts_checking_jobs_statement(request, ['NOT_SEEN'])
-    statement_score = Q(script_checking_result__lte=F('attempt_lhs__problem_contest__threshold'))
+    statement_score = get_attempts_checking_jobs_score_statement()
 
     attempts_to_check = AttemptsCheckJobs.objects.filter(statement & statement_score). \
         distinct().count()
@@ -75,12 +79,11 @@ def check_login_password_exists(login: str, password: str, api_url: str) -> bool
 
 def get_next(a_j: AttemptsCheckJobs, type_of_page, request):
     next_aj = AttemptsCheckJobs.objects. \
-            filter(Q(pk__gt=a_j.pk) &
-                   get_attempts_checking_jobs_statement(request, TYPES_OF_PAGES[type_of_page]['statuses'])).order_by(
-            'pk').first()
+        filter(Q(pk__gt=a_j.pk) &
+               get_attempts_checking_jobs_statement(request, TYPES_OF_PAGES[type_of_page]['statuses'])).order_by(
+        'pk').first()
     if next_aj is None:
         rvrs = reverse(f'checker:{type_of_page}')
     else:
         rvrs = reverse('checker:check_attempts', kwargs={"attempts_check_jobs_id": next_aj.pk})
     return next_aj, rvrs
-
