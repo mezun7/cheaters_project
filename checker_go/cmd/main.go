@@ -11,7 +11,7 @@ func main() {
 	//fmt.Println("Diff\n", comparator.SourcesCompare([]string{""}, []string{""}))
 	params := headquater.Params{
 		DbHost:      os.Getenv(""),
-		WorkerCount: 10,
+		WorkerCount: 2,
 		Local:       true,
 		QueueName:   "checker",
 	}
