@@ -98,7 +98,7 @@ class Attempt(models.Model):
     status = models.CharField(max_length=1000, null=True, blank=True)
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
     problem_contest = models.ForeignKey(ContestProblem, on_delete=models.CASCADE)
-    time = models.IntegerField()
+    time = models.BigIntegerField()
     language = models.CharField(max_length=1000)
     source = models.FileField(upload_to='upload/sources/')
 
