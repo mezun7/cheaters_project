@@ -5,50 +5,48 @@ import (
 	"fmt"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"gorm.io/driver/postgres"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"log"
 	"strconv"
 )
 
 type Params struct {
-	Local       bool
-	DbHost      string
-	DbUser      string
-	DbPassword  string
+	DbHost     string
+	DbUser     string
+	DbPassword string
+	DbName     string
+	DbPort     string
+
 	WorkerCount int
 	QueueName   string
+
+	SourcesPrefix string
 }
 
 type Headquarter struct {
 	db   *gorm.DB
 	conn *amqp.Connection
 
-	queueName   string
-	workerCount int
+	queueName     string
+	workerCount   int
+	sourcesPrefix string
 }
 
 func NewHeadquarter(params Params) (*Headquarter, error) {
-	var db *gorm.DB
-	var conn *amqp.Connection
-	var err error
-	if params.Local {
-		db, err = gorm.Open(sqlite.Open("../db2.sqlite3"))
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai",
-			params.DbHost,
-			params.DbUser,
-			params.DbPassword,
-		)
-		db, err = gorm.Open(postgres.Open(dsn))
-		if err != nil {
-			return nil, err
-		}
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Europe/Moscow",
+		params.DbHost,
+		params.DbUser,
+		params.DbPassword,
+		params.DbName,
+		params.DbPort,
+	)
+	log.Printf("Postgres dsn: %s", dsn)
+	db, err := gorm.Open(postgres.Open(dsn))
+	if err != nil {
+		return nil, err
 	}
-	conn, err = amqp.Dial("amqp://guest:guest@localhost:5672/")
+
+	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	if err != nil {
 		return nil, err
 	}
@@ -56,10 +54,13 @@ func NewHeadquarter(params Params) (*Headquarter, error) {
 	log.Printf("DEBUG: successfully connected to DB and RMQ")
 
 	return &Headquarter{
-		db:          db,
-		conn:        conn,
+		db:   db,
+		conn: conn,
+
 		workerCount: params.WorkerCount,
 		queueName:   params.QueueName,
+
+		sourcesPrefix: params.SourcesPrefix,
 	}, nil
 }
 
@@ -103,7 +104,7 @@ func (h *Headquarter) Start() {
 			for d := range msgs {
 				jobId, _ := strconv.Atoi(string(d.Body))
 				log.Printf("Processing jobId=%v", jobId)
-				cmp.JobProcess(h.db, int64(jobId))
+				cmp.JobProcess(h.db, int64(jobId), h.sourcesPrefix)
 			}
 		}()
 	}

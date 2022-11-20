@@ -2,8 +2,9 @@ package comparator
 
 import (
 	"gorm.io/gorm"
-	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -30,7 +31,7 @@ type Attempt struct {
 	Status           string
 	ParticipantId    int64
 	ProblemContestId int64
-	Time             int
+	Time             int64
 	Language         string
 	Source           string
 	Alias            int
@@ -40,7 +41,7 @@ func (Attempt) TableName() string {
 	return "checker_attempt"
 }
 
-func JobProcess(db *gorm.DB, jobId int64) {
+func JobProcess(db *gorm.DB, jobId int64, sourcesPrefix string) {
 	var job AttemptsCheckJobs
 	db.First(&job, jobId)
 	if db.Error != nil {
@@ -60,13 +61,12 @@ func JobProcess(db *gorm.DB, jobId int64) {
 	var attemptRhs Attempt
 	db.First(&attemptRhs, job.AttemptRhsId)
 
-	// TODO: get rid of deprecated functions
-	sourceLhs, err := ioutil.ReadFile("/home/itl/cheaters_project/media/" + attemptLhs.Source)
+	sourceLhs, err := os.ReadFile(filepath.Join(sourcesPrefix, attemptLhs.Source))
 	if err != nil {
 		log.Printf("Failed to read a LHS Source file, msg: %v", err)
 		return
 	}
-	sourceRhs, err := ioutil.ReadFile("/home/itl/cheaters_project/media/" + attemptRhs.Source)
+	sourceRhs, err := os.ReadFile(filepath.Join(sourcesPrefix, attemptRhs.Source))
 	if err != nil {
 		log.Printf("Failed to read a RHS Source file, msg: %v", err)
 		return
@@ -76,7 +76,7 @@ func JobProcess(db *gorm.DB, jobId int64) {
 	tokensRhs := Tokenize(string(sourceRhs), attemptRhs.Source)
 
 	job.ScriptCheckingResult = float64(int(SourcesCompare(tokensLhs, tokensRhs)*100)) / 100
-	job.CheckingEndTime = time.Now()
+	job.CheckingEndTime = time.Now().Local()
 	job.Status = "NOT_SEEN"
 
 	db.Save(&job)
