@@ -40,7 +40,6 @@ func NewHeadquarter(params Params) (*Headquarter, error) {
 		params.DbName,
 		params.DbPort,
 	)
-	log.Printf("Postgres dsn: %s", dsn)
 	db, err := gorm.Open(postgres.Open(dsn))
 	if err != nil {
 		return nil, err
