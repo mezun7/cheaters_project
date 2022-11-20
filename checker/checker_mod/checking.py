@@ -4,6 +4,8 @@ import django
 import pika
 from django.db.models import Q
 
+from cheaters_project.settings import RMQ_QUEUE_NAME
+
 from checker.models import Group, AttemptsCheckJobs, Contest, Attempt, Problem, Participant, Job
 
 
@@ -40,7 +42,7 @@ def send_tasks_to_check(groups: [Group] = None, contests: [Contest] = None, prob
 def add_jobs(attempts: [Attempt], job: Job = None):
     RMQ_CONNECTION = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     RMQ_CHANNEL = RMQ_CONNECTION.channel()
-    RMQ_CHANNEL.queue_declare(queue='checker', durable=True)
+    RMQ_CHANNEL.queue_declare(queue=RMQ_QUEUE_NAME, durable=True)
     newely_added = 0
     exception_raised = 0
     n = len(attempts)

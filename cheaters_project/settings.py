@@ -163,6 +163,7 @@ LOGIN_REDIRECT_URL = '/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 main_pcms_api_url = 'https://pcms.litsey2.ru/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+RMQ_QUEUE_NAME = 'checker'
 MEDIA_URL = '/media/'
 SOURCE_FILES_SAVE_PATH = 'upload/sources/'
 REDIS_HOST = 'localhost'
