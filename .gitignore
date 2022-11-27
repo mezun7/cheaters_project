@@ -235,3 +235,8 @@ ENV/
 
 # Go workspace file
 go.work
+
+/static
+/data
+celerybeat-schedule.db
+*.sqlite3
