@@ -32,6 +32,12 @@
                         <div class="m-0 font-weight-bold text-secondary">
                             Participant LHS: {{ aj.attempt_lhs.participant }}
                         </div>
+                        <div class="m-0 font-weight-bold text-secondary">
+                            ID LHS: {{ aj.attempt_lhs.pcms_id }}
+                        </div>
+                        <div class="m-0 font-weight-bold text-secondary">
+                            Score: {{ aj.script_checking_result }}
+                        </div>
                     </div>
                     <div class="col-md-7">
                         <div class="m-0 font-weight-bold text-warning">
@@ -45,6 +51,9 @@
 
                         <div class="m-0 font-weight-bold text-secondary">
                             Participant RHS: {{ aj.attempt_rhs.participant }}
+                        </div>
+                        <div class="m-0 font-weight-bold text-secondary">
+                            ID RHS: {{ aj.attempt_rhs.pcms_id }}
                         </div>
                     </div>
                 </div>
@@ -102,12 +111,13 @@
             window.location.href = '{% url 'checker:check_attempts' aj.pk %}?type={{ type_of_page }}&result=CHEATED';
             {#return false;#}
         });
+        {% if next_aj %}
 
-        hotkeys('P', function () {
-            window.location.href = '{% url 'checker:check_attempts' next_aj.pk %}?type={{ type_of_page }}';
-            {#return false;#}
-        });
-
+            hotkeys('P', function () {
+                window.location.href = '{% url 'checker:check_attempts' next_aj.pk %}?type={{ type_of_page }}';
+                {#return false;#}
+            });
+        {% endif %}
         hotkeys('N', function () {
             window.location.href = '{% url 'checker:check_attempts' aj.pk %}?type={{ type_of_page }}&result=NOT_CHEATED';
             {#return false;#}
