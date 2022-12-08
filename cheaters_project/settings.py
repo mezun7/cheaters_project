@@ -90,9 +90,9 @@ WSGI_APPLICATION = 'cheaters_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('POSTGRES_DB'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': os.environ.get('DB_HOST'),
         'PORT': os.environ.get('DB_PORT'),
     }
@@ -166,9 +166,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 RMQ_QUEUE_NAME = 'checker'
 MEDIA_URL = '/media/'
 SOURCE_FILES_SAVE_PATH = 'upload/sources/'
-REDIS_HOST = 'localhost'
+REDIS_HOST = 'redis'
 REDIS_PORT = '6379'
-broker_url = 'amqp://localhost:5672'
+broker_url = 'amqp://rabbit:5672'
 redis_url = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/2'
 CELERY_BROKER_URL = broker_url
 BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
