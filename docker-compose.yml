@@ -1,0 +1,82 @@
+version: '2.4'
+
+services:
+  nginx:
+    image: nginx
+    volumes:
+      - ./static:/app/static
+      - ./configs/nginx:/etc/nginx/conf.d
+    ports:
+      - "82:80"
+    depends_on:
+      - app
+  db:
+    image: postgres:13.3
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: $DB_NAME
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: $DB_PASSWORD
+  rabbitmq:
+    image: "rabbitmq:latest"
+  celery:
+    build: .
+    image: app
+    command: celery -A cheaters_project worker -l info
+    restart: always
+    env_file:
+      - '.env'
+    depends_on:
+      - db
+      - rabbitmq
+  celery-beat:
+    build: .
+    image: app
+    command: celery -A cheaters_project beat -l info
+    restart: always
+    env_file:
+      - '.env'
+    depends_on:
+      - db
+      - rabbitmq
+  app:
+    build: .
+    image: app
+    restart: always
+    env_file:
+      - '.env'
+    depends_on:
+      - db
+      - celery
+      - celery-beat
+  init_db:
+    build: .
+    image: app
+    command: bash -c "python3 manage.py migrate && python3 manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL"
+    env_file:
+      - '.env'
+    depends_on:
+      - db
+  collectstatic:
+    build: .
+    image: app
+    volumes:
+      - ./static:/app/static
+    command: python3 manage.py collectstatic --noinput
+#  parse_contests:
+#    build: .
+#    image: app
+#    command: python manage.py shell --command="import mainapplication.parser.contest_parser; mainapplication.parser.contest_parser.start_parsing_all();"
+#    env_file:
+#      - '.env'
+#    depends_on:
+#      - db
+#  parse_attempts:
+#    build: .
+#    image: app
+#    command: python manage.py shell --command="import mainapplication.parser.attempts_parser; mainapplication.parser.attempts_parser.parse_all_attempts();"
+#    env_file:
+#      - '.env'
+#    depends_on:
+#      - db
