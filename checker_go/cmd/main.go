@@ -19,6 +19,7 @@ func main() {
 		WorkerCount:   2,
 		QueueName:     os.Getenv("CHECKER_QUEUE_NAME"),
 		SourcesPrefix: os.Getenv("CHECKER_SOURCES_PREFIX"),
+		RmqHost:       os.Getenv("RMQ_HOST"),
 	}
 
 	hq, err := headquarter.NewHeadquarter(params)

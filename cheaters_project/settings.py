@@ -19,14 +19,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
+CSRF_TRUSTED_ORIGINS = ['http://localhost:82']
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-s3y_z9^o_0n+eojf%p010^z&!6fm*y4kg3u)#p9h4+7k6gg$gc'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -153,7 +153,7 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = 'static/'
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
@@ -168,7 +168,8 @@ MEDIA_URL = '/media/'
 SOURCE_FILES_SAVE_PATH = 'upload/sources/'
 REDIS_HOST = 'localhost'
 REDIS_PORT = '6379'
-broker_url = 'amqp://localhost:5672'
+RMQ_HOST = os.environ.get("RMQ_HOST")
+broker_url = f'amqp://{RMQ_HOST}:5672'
 redis_url = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/2'
 CELERY_BROKER_URL = broker_url
 BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}

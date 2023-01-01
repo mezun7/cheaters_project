@@ -6,6 +6,7 @@ services:
     volumes:
       - ./static:/app/static
       - ./configs/nginx:/etc/nginx/conf.d
+      - ./media:/app/media
     ports:
       - "82:80"
     depends_on:
@@ -14,12 +15,16 @@ services:
     image: postgres:13.3
     volumes:
       - ./data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     environment:
-      POSTGRES_DB: $DB_NAME
-      POSTGRES_USER: $DB_USER
-      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_DB: $POSTGRES_DB
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
   rabbitmq:
     image: "rabbitmq:latest"
+    ports:
+      - "5672:5672"
   celery:
     build: .
     image: app
@@ -46,10 +51,13 @@ services:
     restart: always
     env_file:
       - '.env'
+    volumes:
+      - ./media:/app/media
     depends_on:
       - db
       - celery
       - celery-beat
+      - rabbitmq
   init_db:
     build: .
     image: app
@@ -64,6 +72,15 @@ services:
     volumes:
       - ./static:/app/static
     command: python3 manage.py collectstatic --noinput
+  go_app:
+    build: ./checker_go
+    image: go_app
+    restart: always
+    env_file:
+      - '.env'
+    depends_on:
+      - rabbitmq
+      - db
 #  parse_contests:
 #    build: .
 #    image: app

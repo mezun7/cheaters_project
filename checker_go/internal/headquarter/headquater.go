@@ -19,6 +19,7 @@ type Params struct {
 
 	WorkerCount int
 	QueueName   string
+	RmqHost     string
 
 	SourcesPrefix string
 }
@@ -45,7 +46,7 @@ func NewHeadquarter(params Params) (*Headquarter, error) {
 		return nil, err
 	}
 
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial(fmt.Sprintf("amqp://guest:guest@#{params.RmqHost}:5672/"))
 	if err != nil {
 		return nil, err
 	}
