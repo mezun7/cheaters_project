@@ -223,7 +223,7 @@ data/
 *.dll
 *.so
 *.dylib
-
+data*
 # Test binary, built with `go test -c`
 *.test
 
