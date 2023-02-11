@@ -1,4 +1,3 @@
-
 FROM python:latest
 #RUN apk update && apk add gcc libc-dev
 RUN mkdir /app

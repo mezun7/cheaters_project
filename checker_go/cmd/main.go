@@ -12,9 +12,9 @@ func main() {
 	params := headquarter.Params{
 		DbHost:     os.Getenv("DB_HOST"),
 		DbPort:     os.Getenv("DB_PORT"),
-		DbUser:     os.Getenv("POSTGRES_USER"),
-		DbPassword: os.Getenv("POSTGRES_PASSWORD"),
-		DbName:     os.Getenv("POSTGRES_DB"),
+		DbUser:     os.Getenv("DB_USER"),
+		DbPassword: os.Getenv("DB_PASSWORD"),
+		DbName:     os.Getenv("DB_NAME"),
 
 		WorkerCount:   2,
 		QueueName:     os.Getenv("CHECKER_QUEUE_NAME"),
@@ -24,7 +24,7 @@ func main() {
 
 	hq, err := headquarter.NewHeadquarter(params)
 	if err != nil {
-		fmt.Printf("failed to create hq: %w", err)
+		fmt.Printf("failed to create hq: %w\n", err)
 		return
 	}
 

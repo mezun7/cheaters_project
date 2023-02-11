@@ -18,13 +18,14 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: $POSTGRES_DB
-      POSTGRES_USER: $POSTGRES_USER
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_DB: $DB_NAME
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: $DB_PASSWORD
   rabbitmq:
-    image: "rabbitmq:latest"
+    image: "rabbitmq:3-management"
     ports:
       - "5672:5672"
+      - "15672:15672"
   celery:
     build: .
     image: app

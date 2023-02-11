@@ -14,6 +14,7 @@ def add(x, y):
 
 @shared_task
 def delayed_parse_group(group_id):
+    print("parse group started")
     group = Group.objects.get(pk=group_id)
     parse_all_of_group_contests(group)
     parse_all_group_contest(group)

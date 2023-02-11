@@ -109,5 +109,6 @@ def start_sync(request, group_id):
 
 
 @login_required()
-def sync_contest(request, contest_id, group_id):
-    return HttpResponseRedirect(reverse('checker:group'), kwargs={'group_id': group_id})
+def sync_contest(request, group_id, contest_id):
+    delayed_parse_group.delay(group_id)
+    return HttpResponseRedirect(reverse('checker:group', kwargs={'group_id': group_id}))

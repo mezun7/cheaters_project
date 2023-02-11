@@ -46,7 +46,7 @@ func NewHeadquarter(params Params) (*Headquarter, error) {
 		return nil, err
 	}
 
-	conn, err := amqp.Dial(fmt.Sprintf("amqp://guest:guest@#{params.RmqHost}:5672/"))
+	conn, err := amqp.Dial(fmt.Sprintf("amqp://guest:guest@%s:5672", params.RmqHost))
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func NewHeadquarter(params Params) (*Headquarter, error) {
 
 func (h *Headquarter) Start() {
 	var forever chan struct{}
-	log.Printf("Running %v workers", h.workerCount)
+	fmt.Printf("Running %v workers\n", h.workerCount)
 	for i := 0; i < h.workerCount; i++ {
 		go func() {
 			ch, _ := h.conn.Channel()
