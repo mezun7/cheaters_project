@@ -15,17 +15,12 @@ services:
     image: postgres:13.3
     volumes:
       - ./data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_DB: $DB_NAME
       POSTGRES_USER: $DB_USER
       POSTGRES_PASSWORD: $DB_PASSWORD
   rabbitmq:
     image: "rabbitmq:3-management"
-    ports:
-      - "5672:5672"
-      - "15672:15672"
   celery:
     build: .
     image: app
@@ -66,6 +61,7 @@ services:
   init_db:
     build: .
     image: app
+    restart: on-failure
     command: bash -c "python3 manage.py migrate && python3 manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL"
     env_file:
       - '.env'
