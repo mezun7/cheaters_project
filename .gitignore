@@ -236,3 +236,4 @@ data*
 # Go workspace file
 go.work
 static/
+media/

@@ -48,7 +48,9 @@ def get_problem_contest(alias: str, name: str, contest: Contest, group: Group):
 
 def get_source_path(participant: Participant, contest: Contest, json_source, job_id):
     path = os.path.join(settings.MEDIA_ROOT, settings.SOURCE_FILES_SAVE_PATH, participant.pcms_id)
+    print('check dir {}'.format(path))
     if not os.path.exists(path):
+        print('create dir {}'.format(path))
         os.makedirs(path)
     extension = json_source['name'].split('.')[-1]
     name = job_id.split('.')[-5:]

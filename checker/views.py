@@ -8,7 +8,7 @@ from django.urls import reverse
 from checker.forms import GroupAddForm
 from checker.helpers.helpers import get_menu_info
 from checker.models import Job, Group, Contest
-from checker.tasks import delayed_parse_group
+from checker.tasks import delayed_parse_group, delayed_parse_group_contest_attempts
 
 
 # Create your views here.
@@ -109,5 +109,6 @@ def start_sync(request, group_id):
 
 
 @login_required()
-def sync_contest(request, contest_id, group_id):
-    return HttpResponseRedirect(reverse('checker:group'), kwargs={'group_id': group_id})
+def sync_contest(request, group_id, contest_id):
+    delayed_parse_group_contest_attempts.delay(group_id, contest_id)
+    return HttpResponseRedirect(reverse('checker:group', kwargs={'group_id': group_id}))

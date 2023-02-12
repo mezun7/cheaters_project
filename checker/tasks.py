@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 from checker.checker_mod.checking import send_tasks_to_check
 from checker.models import Group, Job, Contest
-from checker.parser.attempts_parser import parse_all_group_contest
+from checker.parser.attempts_parser import parse_all_group_contest, parse_contest_attempts
 from checker.parser.contest_parser import parse_all_of_group_contests
 
 
@@ -14,9 +14,17 @@ def add(x, y):
 
 @shared_task
 def delayed_parse_group(group_id):
+    print("parse group started")
     group = Group.objects.get(pk=group_id)
     parse_all_of_group_contests(group)
-    parse_all_group_contest(group)
+    # parse_all_group_contest(group)
+
+@shared_task
+def delayed_parse_group_contest_attempts(group_id, contest_id):
+    print("parse contest attempts started")
+    group = Group.objects.get(pk=group_id)
+    contest = Contest.objects.get(pk=contest_id)
+    parse_contest_attempts(group, contest)
 
 
 @shared_task()

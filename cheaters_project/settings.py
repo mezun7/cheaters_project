@@ -90,9 +90,9 @@ WSGI_APPLICATION = 'cheaters_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('POSTGRES_DB'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': os.environ.get('DB_HOST'),
         'PORT': os.environ.get('DB_PORT'),
     }
@@ -163,17 +163,27 @@ LOGIN_REDIRECT_URL = '/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 main_pcms_api_url = 'https://pcms.litsey2.ru/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-RMQ_QUEUE_NAME = 'checker'
+RMQ_QUEUE_NAME = os.environ.get("CHECKER_QUEUE_NAME")
 MEDIA_URL = '/media/'
 SOURCE_FILES_SAVE_PATH = 'upload/sources/'
-REDIS_HOST = 'localhost'
-REDIS_PORT = '6379'
 RMQ_HOST = os.environ.get("RMQ_HOST")
 broker_url = f'amqp://{RMQ_HOST}:5672'
-redis_url = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/2'
 CELERY_BROKER_URL = broker_url
 BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
-# CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/1'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'django-cache'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+
+# CELERY_BEAT_SCHEDULE = {
+#     # Executes every Monday morning at 7:30 a.m.
+#     'parse_contests': {
+#         'task': 'checker.tasks.delayed_parse_group',
+#         'schedule': crontab(minute='30'),
+#         # 'args': (16, 16),
+#     },
+#     'parse_attempts': {
+#         'task': 'checker.tasks.start_cheaters_checking_job',
+#         'schedule': crontab(minute='*/30'),
+#         # 'args': (16, 16),
+#     },
+# }

@@ -15,16 +15,12 @@ services:
     image: postgres:13.3
     volumes:
       - ./data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     environment:
-      POSTGRES_DB: $POSTGRES_DB
-      POSTGRES_USER: $POSTGRES_USER
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_DB: $DB_NAME
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: $DB_PASSWORD
   rabbitmq:
-    image: "rabbitmq:latest"
-    ports:
-      - "5672:5672"
+    image: "rabbitmq:3-management"
   celery:
     build: .
     image: app
@@ -32,6 +28,8 @@ services:
     restart: always
     env_file:
       - '.env'
+    volumes:
+      - ./media:/app/media
     depends_on:
       - db
       - rabbitmq
@@ -42,6 +40,8 @@ services:
     restart: always
     env_file:
       - '.env'
+    volumes:
+      - ./media:/app/media
     depends_on:
       - db
       - rabbitmq
@@ -61,6 +61,7 @@ services:
   init_db:
     build: .
     image: app
+    restart: on-failure
     command: bash -c "python3 manage.py migrate && python3 manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL"
     env_file:
       - '.env'
@@ -78,6 +79,8 @@ services:
     restart: always
     env_file:
       - '.env'
+    volumes:
+      - ./media:/cheaters_project/media
     depends_on:
       - rabbitmq
       - db
