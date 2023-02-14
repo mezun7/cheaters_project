@@ -6,4 +6,4 @@ RUN go mod tidy
 WORKDIR /app/cmd
 ENV PRODUCTION=1
 RUN go build -o main main.go
-CMD ./main
+#CMD ./main
