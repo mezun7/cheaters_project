@@ -20,10 +20,7 @@ from django.urls import path, include
 from cheaters_project import settings
 
 urlpatterns = [
-    path('cheaters/admin/', admin.site.urls),
-    path('cheaters/api/', include(('api.urls', 'api'), namespace='api')),
-    path('cheaters/', include(('checker.urls', 'checker'), namespace='checker'))
+    path('admin/', admin.site.urls),
+    path('api/', include(('api.urls', 'api'), namespace='api')),
+    path('', include(('checker.urls', 'checker'), namespace='checker'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-# urlpatterns = [
-#     path('cheaters/', include(urlpatterns)),
-# ]
