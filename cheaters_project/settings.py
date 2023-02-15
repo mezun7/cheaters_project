@@ -189,3 +189,5 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 #         # 'args': (16, 16),
 #     },
 # }
+
+BASE_URL_PREFIX = r'^/cheaters'

@@ -24,3 +24,5 @@ urlpatterns = [
     path('api/', include(('api.urls', 'api'), namespace='api')),
     path('', include(('checker.urls', 'checker'), namespace='checker'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.BASE_URL_PREFIX:
+    urlpatterns = [path(settings.BASE_URL_PREFIX, include(urlpatterns))]
