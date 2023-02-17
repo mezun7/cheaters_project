@@ -53,10 +53,12 @@ def checking_in_progress(request):
 
 @login_required()
 def check_attempts(request, attempts_check_jobs_id):
-
     a_j: AttemptsCheckJobs = AttemptsCheckJobs.objects.get(pk=attempts_check_jobs_id)
     context = get_menu_info(request, 'Checking attempts')
-    context['lang'] = CODEMIRROR_LANG_PARAMS[a_j.attempt_lhs.source.path.split('.')[-1]]
+    try:
+        context['lang'] = CODEMIRROR_LANG_PARAMS[a_j.attempt_lhs.source.path.split('.')[-1]]
+    except KeyError:
+        context['lang'] = 'text/x-c++src'
     context['lhs'] = get_raw_str(a_j.attempt_lhs.source.path)
     context['rhs'] = get_raw_str(a_j.attempt_rhs.source.path)
     context['aj'] = a_j
