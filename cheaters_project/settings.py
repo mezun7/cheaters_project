@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:82', 'http://localhost:82', 'http://cheaters.local:82']
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:82', 'http://localhost:82', 'http://codecmp.litsey2.ru', 'https://codecmp.litsey2.ru']
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-s3y_z9^o_0n+eojf%p010^z&!6fm*y4kg3u)#p9h4+7k6gg$gc'
 
