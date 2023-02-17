@@ -61,7 +61,7 @@ services:
   init_db:
     build: .
     image: app
-    restart: on-failure
+    restart: "no"
     command: bash -c "python3 manage.py migrate && python3 manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL"
     env_file:
       - '.env'
