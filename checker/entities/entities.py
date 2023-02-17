@@ -38,7 +38,8 @@ AUTH_TYPE_CHOICES = (
 CODEMIRROR_LANG_PARAMS = {
     'py': 'text/x-python',
     'cpp': 'text/x-c++src',
-    'pas': 'text/x-pascal'
+    'pas': 'text/x-pascal',
+    'java': 'text/x-java'
 }
 
 TYPES_OF_PAGES = {
